@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEST :: Graphics &amp; Multimedia :: Grade 9</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap');
+  :root{
+    --bg:#0a0c10;--panel:#0d1117;--border:#2a1a3a;
+    --purple:#bf5fff;--purple-dim:#9b3fd4;--purple-dark:#3a0060;
+    --cyan:#00e5ff;--red:#ff3355;--yellow:#ffd700;
+    --text:#c9d1d9;--text-dim:#6e7681;--correct:#00ff88;--wrong:#ff3355;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(191,95,255,.01) 2px,rgba(191,95,255,.01) 4px);pointer-events:none;z-index:9999}
+
+  #blocked-screen{display:none;position:fixed;inset:0;background:#000;z-index:10000;align-items:center;justify-content:center;flex-direction:column;gap:24px;font-family:'Share Tech Mono',monospace}
+  #blocked-screen.active{display:flex}
+  .blocked-icon{font-size:80px;animation:pulse-red 1.5s infinite}
+  @keyframes pulse-red{0%,100%{text-shadow:0 0 20px var(--red),0 0 40px var(--red)}50%{text-shadow:0 0 5px var(--red)}}
+  .blocked-title{font-family:'Orbitron',monospace;font-size:28px;color:var(--red);letter-spacing:4px}
+  .blocked-msg{color:var(--text-dim);font-size:14px;text-align:center;max-width:460px;line-height:1.8}
+  .blocked-code{color:var(--purple);font-size:12px;padding:12px 20px;border:1px solid var(--border);background:var(--panel)}
+
+  header{border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;background:var(--panel);position:sticky;top:0;z-index:100}
+  .logo{font-family:'Orbitron',monospace;font-size:13px;color:var(--purple);letter-spacing:2px}
+  .logo span{color:var(--text-dim)}
+  .header-info{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim);display:flex;gap:24px}
+  .timer-box{font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--purple);letter-spacing:2px;text-shadow:0 0 10px var(--purple)}
+  .timer-box.warn{color:var(--yellow);text-shadow:0 0 10px var(--yellow)}
+  .timer-box.crit{color:var(--red);text-shadow:0 0 10px var(--red);animation:blink .5s infinite}
+  @keyframes blink{50%{opacity:.3}}
+
+  #start-screen{max-width:680px;margin:60px auto;padding:0 24px}
+  .start-title{font-family:'Orbitron',monospace;font-size:11px;color:var(--purple);letter-spacing:4px;margin-bottom:8px}
+  .start-h1{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;line-height:1.2;margin-bottom:24px;background:linear-gradient(135deg,var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+  .info-card{border:1px solid var(--border);padding:16px;background:var(--panel);text-align:center}
+  .info-card .val{font-family:'Orbitron',monospace;font-size:28px;color:var(--purple);display:block}
+  .info-card .lbl{font-size:11px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;display:block}
+  .warning-box{border:1px solid #7a2f2f;background:rgba(255,51,85,.07);padding:16px 20px;margin-bottom:32px;display:flex;gap:12px;align-items:flex-start}
+  .warning-box .icon{color:var(--red);font-size:20px;flex-shrink:0}
+  .warning-box p{font-size:13px;color:#c07070;line-height:1.6;font-family:'Share Tech Mono',monospace}
+  .warning-box strong{color:var(--red)}
+  .name-input-wrap{margin-bottom:28px}
+  .field-label{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--purple);letter-spacing:2px;display:block;margin-bottom:8px}
+  .name-input{width:100%;background:var(--panel);border:1px solid var(--border);color:var(--purple);font-family:'Share Tech Mono',monospace;font-size:16px;padding:12px 16px;outline:none;transition:border-color .2s}
+  .name-input:focus{border-color:var(--purple)}
+  .btn-start{width:100%;padding:16px;background:transparent;border:2px solid var(--purple);color:var(--purple);font-family:'Orbitron',monospace;font-size:14px;font-weight:700;letter-spacing:3px;cursor:pointer;position:relative;overflow:hidden;transition:all .2s}
+  .btn-start::before{content:'';position:absolute;inset:0;background:var(--purple);transform:translateX(-100%);transition:transform .3s ease;z-index:0}
+  .btn-start:hover::before{transform:translateX(0)}
+  .btn-start:hover{color:#000}
+  .btn-start span{position:relative;z-index:1}
+
+  #quiz-screen{display:none;max-width:760px;margin:0 auto;padding:32px 24px 80px}
+  #quiz-screen.active{display:block}
+  .progress-bar-wrap{margin-bottom:32px}
+  .progress-meta{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);margin-bottom:8px}
+  .progress-track{height:3px;background:var(--panel);border:1px solid var(--border)}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--purple-dark),var(--purple));transition:width .4s ease;box-shadow:0 0 8px var(--purple)}
+  .question-card{border:1px solid var(--border);background:var(--panel);padding:28px 28px 24px;margin-bottom:24px;position:relative;animation:fadeIn .3s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .question-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--purple);box-shadow:0 0 12px var(--purple)}
+  .q-num{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:2px;margin-bottom:12px}
+  .q-text{font-size:17px;font-weight:600;line-height:1.5;color:var(--text);margin-bottom:20px}
+  .q-text code{font-family:'Share Tech Mono',monospace;background:rgba(191,95,255,.1);color:var(--purple);padding:2px 6px;font-size:14px}
+  .options-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .option-label{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid var(--border);cursor:pointer;transition:all .15s;font-size:15px;font-weight:600;color:var(--text);user-select:none}
+  .option-label:hover{border-color:var(--purple-dim);background:rgba(191,95,255,.06)}
+  .option-label .opt-key{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--purple);min-width:22px;letter-spacing:1px}
+  .option-label.selected{border-color:var(--purple);background:rgba(191,95,255,.12)}
+  .option-label.correct{border-color:var(--correct);background:rgba(0,255,136,.15);color:var(--correct)}
+  .option-label.wrong{border-color:var(--wrong);background:rgba(255,51,85,.1);color:var(--wrong)}
+  .nav-row{display:flex;gap:12px;justify-content:flex-end;margin-top:8px}
+  .btn-nav{padding:10px 28px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .15s}
+  .btn-nav:hover{border-color:var(--purple);color:var(--purple)}
+  .btn-nav.primary{border-color:var(--purple);color:var(--purple);background:rgba(191,95,255,.06)}
+  .btn-nav.primary:hover{background:var(--purple);color:#000}
+
+  #result-screen{display:none;max-width:760px;margin:0 auto;padding:32px 24px}
+  #result-screen.active{display:block;animation:fadeIn .4s ease}
+  .result-header{font-family:'Orbitron',monospace;font-size:11px;color:var(--text-dim);letter-spacing:4px;margin-bottom:20px}
+  .score-display{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+  .score-num{font-family:'Orbitron',monospace;font-size:80px;font-weight:900;line-height:1}
+  .score-total{font-family:'Share Tech Mono',monospace;font-size:20px;color:var(--text-dim)}
+  .grade-badge{display:inline-block;font-family:'Orbitron',monospace;font-size:13px;font-weight:700;padding:6px 16px;letter-spacing:2px;margin-bottom:32px}
+  .result-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+  .stat-card{border:1px solid var(--border);padding:16px;background:var(--panel);text-align:center}
+  .stat-card .sv{font-family:'Orbitron',monospace;font-size:24px;display:block;margin-bottom:4px}
+  .stat-card .sl{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:1px;display:block}
+  #send-status{font-family:'Share Tech Mono',monospace;font-size:12px;margin:12px 0 28px;text-align:center;min-height:18px}
+  .review-title{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim);letter-spacing:2px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  .review-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid rgba(42,26,58,.6);align-items:flex-start}
+  .review-icon{font-size:16px;flex-shrink:0;margin-top:2px}
+  .review-q{font-size:14px;font-weight:600;line-height:1.4;margin-bottom:4px}
+  .review-a{font-family:'Share Tech Mono',monospace;font-size:12px}
+  .review-a .lbl{color:var(--text-dim);margin-right:6px}
+  .review-a .correct-ans{color:var(--correct)}
+  .review-a .user-ans{color:var(--wrong)}
+  .closing-note{margin-top:40px;padding:20px;border:1px solid var(--border);background:var(--panel);font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);line-height:2;text-align:center}
+  .closing-note strong{color:var(--purple)}
+</style>
+</head>
+<body>
+
+<div id="blocked-screen">
+  <div class="blocked-icon">&#x1F512;</div>
+  <div class="blocked-title">ACCESS DENIED</div>
+  <div class="blocked-msg">Тест вже був пройдений на цьому пристрої.<br>Повторний запуск неможливий.<br><br>Зверніться до вчителя для скидання.</div>
+  <div class="blocked-code" id="blocked-info"></div>
+</div>
+
+<header>
+  <div class="logo">&#x1F3A8; ІНФОРМАТИКА <span>// 9 КЛАС</span></div>
+  <div class="header-info">
+    <span id="hdr-name">&#x2014;</span>
+    <span>Q:<span id="hdr-q">0</span>/<span id="hdr-total">0</span></span>
+  </div>
+  <div class="timer-box" id="timer">35:00</div>
+</header>
+
+<div id="start-screen">
+  <div class="start-title">// ТЕСТУВАННЯ</div>
+  <div class="start-h1">Графіка та<br>Мультимедіа</div>
+  <div class="info-grid">
+    <div class="info-card"><span class="val">40</span><span class="lbl">ПИТАНЬ</span></div>
+    <div class="info-card"><span class="val">35</span><span class="lbl">ХВИЛИН</span></div>
+    <div class="info-card"><span class="val">9</span><span class="lbl">КЛАС</span></div>
+  </div>
+  <div class="warning-box">
+    <div class="icon">&#x26A0;</div>
+    <p><strong>УВАГА!</strong> Тест можна пройти лише <strong>ОДИН РАЗ</strong> на цьому пристрої.<br>Після завершення повторний запуск буде заблоковано.<br>Переконайся що є підключення до Інтернету.</p>
+  </div>
+  <div class="name-input-wrap">
+    <label class="field-label" for="student-name">// ВВЕДИ ІМ'Я ТА ПРІЗВИЩЕ</label>
+    <input class="name-input" type="text" id="student-name" placeholder="Іванченко Олексій" autocomplete="off">
+  </div>
+  <button class="btn-start" onclick="startTest()"><span>&#x25B6; РОЗПОЧАТИ ТЕСТУВАННЯ</span></button>
+</div>
+
+<div id="quiz-screen">
+  <div class="progress-bar-wrap">
+    <div class="progress-meta">
+      <span id="prog-label">Питання 1 з 40</span>
+      <span id="prog-pct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div id="question-area"></div>
+  <div class="nav-row">
+    <button class="btn-nav" onclick="prevQ()" id="btn-prev">&#x25C4; НАЗАД</button>
+    <button class="btn-nav primary" onclick="nextQ()" id="btn-next">ДАЛІ &#x25BA;</button>
+  </div>
+</div>
+
+<div id="result-screen">
+  <div class="result-header">// РЕЗУЛЬТАТИ ТЕСТУВАННЯ</div>
+  <div id="student-name-display" style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text-dim);margin-bottom:16px;"></div>
+  <div class="score-display">
+    <div class="score-num" id="score-num" style="color:var(--purple)">0</div>
+    <div class="score-total" id="score-total">/40</div>
+  </div>
+  <div class="grade-badge" id="grade-badge"></div>
+  <div class="result-stats">
+    <div class="stat-card"><span class="sv" id="st-correct" style="color:var(--correct)">0</span><span class="sl">ПРАВИЛЬНИХ</span></div>
+    <div class="stat-card"><span class="sv" id="st-wrong" style="color:var(--wrong)">0</span><span class="sl">НЕПРАВИЛЬНИХ</span></div>
+    <div class="stat-card"><span class="sv" id="st-skip" style="color:var(--yellow)">0</span><span class="sl">ПРОПУЩЕНИХ</span></div>
+    <div class="stat-card"><span class="sv" id="st-time" style="color:var(--purple)">&#x2014;</span><span class="sl">ВИТРАЧЕНО</span></div>
+  </div>
+  <div id="send-status"></div>
+  <div class="review-title">// РОЗБІР ВІДПОВІДЕЙ</div>
+  <div id="review-list"></div>
+  <div class="closing-note">Результат збережено. Повторний запуск <strong>заблоковано</strong>.<br>Здай результати вчителю: <strong id="final-name-code">&#x2014;</strong></div>
+</div>
+
+<script>
+var QUESTIONS = [
+  // ── ОСНОВИ КОМП'ЮТЕРНОЇ ГРАФІКИ ──
+  {q:"Що таке комп'ютерна графіка?",opts:["Програма для набору тексту","Сукупність методів і засобів для створення та обробки зображень за допомогою комп'ютера","Тип принтера для друку фото","Мова програмування для веб-сайтів"],ans:1},
+  {q:"Які два основні види комп'ютерної графіки існують?",opts:["Плоска та об'ємна","Растрова та векторна","Кольорова та чорно-біла","Цифрова та аналогова"],ans:1},
+  {q:"Де використовується комп'ютерна графіка?",opts:["Лише в іграх","Лише в медицині","У веб-дизайні, поліграфії, кіно, іграх, архітектурі та медицині","Лише для створення логотипів"],ans:2},
+
+  // ── РАСТРОВА ГРАФІКА ──
+  {q:"Що таке растрове зображення?",opts:["Зображення зі складних математичних формул","Зображення, що складається з окремих кольорових точок — пікселів","Зображення виключно у форматі PDF","Тривимірна модель об'єкта"],ans:1},
+  {q:"Що таке піксель?",opts:["Одиниця виміру розміру файлу","Найменша неподільна точка растрового зображення","Тип кольору в палітрі","Шар у графічному редакторі"],ans:1},
+  {q:"Що таке роздільна здатність зображення?",opts:["Розмір файлу в мегабайтах","Кількість пікселів на одиницю довжини (наприклад, PPI або DPI)","Кількість кольорів у зображенні","Швидкість завантаження зображення"],ans:1},
+  {q:"Який формат растрового зображення найкраще підходить для фотографій з малим розміром файлу?",opts:["BMP","PNG","JPG","SVG"],ans:2},
+  {q:"Який формат підтримує прозорий фон (прозорість)?",opts:["JPG","BMP","MP4","PNG"],ans:3},
+  {q:"Який формат растрового зображення зберігає дані без стиснення і має найбільший розмір файлу?",opts:["JPG","PNG","BMP","GIF"],ans:2},
+  {q:"Який головний недолік растрової графіки при збільшенні зображення?",opts:["Збільшується час відкриття файлу","Зображення втрачає чіткість, з'являється 'пікселізація'","Змінюються кольори зображення","Файл автоматично видаляється"],ans:1},
+
+  // ── ВЕКТОРНА ГРАФІКА ──
+  {q:"Що таке векторна графіка?",opts:["Зображення із сітки пікселів","Зображення, що описується математичними формулами: точками, лініями, кривими та фігурами","Тип анімованого GIF","Формат для зберігання відео"],ans:1},
+  {q:"З чого складається векторне зображення?",opts:["З пікселів різних кольорів","З математично описаних об'єктів: ліній, кривих, фігур","З аудіо та відео доріжок","З таблиць і формул"],ans:1},
+  {q:"Який формат є векторним?",opts:["JPG","PNG","BMP","SVG"],ans:3},
+  {q:"Яка головна перевага векторної графіки над растровою?",opts:["Векторні файли завжди менші за растрові","Векторні зображення можна масштабувати без втрати якості","Векторна графіка підтримує більше кольорів","Векторні файли відкриваються швидше"],ans:1},
+  {q:"Де найкраще використовувати векторну графіку?",opts:["Для збереження фотографій з відпочинку","Для логотипів, іконок, схем, ілюстрацій","Для відеомонтажу","Для запису звуку"],ans:1},
+  {q:"Який недолік векторної графіки?",opts:["Погано масштабується","Складно реалістично передати фотографічні деталі та складні текстури","Займає більше місця ніж BMP","Не підтримує кольори"],ans:1},
+
+  // ── ПОРІВНЯННЯ ──
+  {q:"Що відбувається з растровим зображенням при збільшенні в 10 разів?",opts:["Якість покращується","Розмір файлу зменшується","З'являється розмитість або пікселізація","Зображення конвертується у векторне"],ans:2},
+  {q:"Що відбувається з векторним зображенням при збільшенні в 10 разів?",opts:["З'являється пікселізація","Якість залишається ідеальною, зображення чітке","Файл автоматично стискається","Змінюються кольори"],ans:1},
+  {q:"Який тип графіки краще підходить для логотипу компанії?",opts:["Растровий JPG","Растровий BMP","Векторний SVG або AI","Растровий PNG з низькою роздільною здатністю"],ans:2},
+  {q:"Який тип графіки краще підходить для збереження фотографії?",opts:["Векторний SVG","Растровий JPG або PNG","Векторний AI","Текстовий TXT"],ans:1},
+
+  // ── ГРАФІЧНІ РЕДАКТОРИ ──
+  {q:"Яке призначення графічного редактора?",opts:["Написання програмного коду","Створення, редагування та обробка зображень","Монтаж відеофільмів виключно","Керування файлами на диску"],ans:1},
+  {q:"Який з перелічених є безкоштовним растровим графічним редактором?",opts:["Adobe Photoshop","CorelDRAW","GIMP","Adobe Illustrator"],ans:2},
+  {q:"Для якого типу графіки призначений Adobe Illustrator?",opts:["Растрової","Векторної","Тривимірної","Відео"],ans:1},
+  {q:"Що таке шар (layer) у графічному редакторі?",opts:["Тип пензля для малювання","Окремий прозорий рівень зображення, що можна редагувати незалежно від інших","Фільтр для зміни кольорів","Формат збереження файлу"],ans:1},
+  {q:"Яка перевага роботи з шарами у графічному редакторі?",opts:["Зменшення розміру файлу","Можливість редагувати окремі елементи зображення не впливаючи на інші","Автоматичне збереження","Прискорення роботи програми"],ans:1},
+  {q:"Інструмент 'заливка' у графічному редакторі використовується для:",opts:["Виділення частини зображення","Малювання від руки","Заповнення замкнутої області певним кольором","Обрізки зображення"],ans:2},
+
+  // ── ОПЕРАЦІЇ З ЗОБРАЖЕННЯМИ ──
+  {q:"Що таке операція 'crop' (обрізка) у графічному редакторі?",opts:["Зміна яскравості зображення","Видалення небажаних країв або частин зображення","Додавання тексту на зображення","Зміна формату файлу"],ans:1},
+  {q:"Що відбувається з якістю JPG файлу при багаторазовому збереженні?",opts:["Якість покращується","Якість не змінюється","Якість погіршується через втрати при стисненні","Файл збільшується вдвічі"],ans:2},
+  {q:"Яке поєднання клавіш скасовує останню дію у більшості графічних редакторів?",opts:["Ctrl+S","Ctrl+Z","Ctrl+C","Ctrl+P"],ans:1},
+  {q:"Для чого використовується зміна контрасту зображення?",opts:["Для зменшення розміру файлу","Для підсилення або послаблення різниці між світлими та темними ділянками","Для зміни формату файлу","Для додавання ефекту розмиття"],ans:1},
+
+  // ── ВІДЕОМОНТАЖ ──
+  {q:"Що таке відеомонтаж?",opts:["Зйомка відео на камеру","Процес обробки та редагування відеоматеріалу: вирізання, склеювання, додавання ефектів","Конвертація відео у аудіо","Перегляд відео в повноекранному режимі"],ans:1},
+  {q:"Яка з програм є безкоштовним професійним відеоредактором?",opts:["Adobe Premiere Pro","Final Cut Pro","DaVinci Resolve","Sony Vegas Pro"],ans:2},
+  {q:"Що таке 'експорт' відео у відеоредакторі?",opts:["Завантаження відео з Інтернету","Збереження готового змонтованого відео у вибраному форматі","Додавання субтитрів","Налаштування звуку"],ans:1},
+  {q:"Який формат відео є найпоширенішим для публікації в Інтернеті?",opts:["AVI","MOV","MP4","WMV"],ans:2},
+
+  // ── ФОРМАТИ МУЛЬТИМЕДІА ──
+  {q:"Який формат аудіо забезпечує стиснення зі втратами але малий розмір файлу?",opts:["WAV","FLAC","MP3","AIFF"],ans:2},
+  {q:"Чим відрізняється формат WAV від MP3?",opts:["WAV менший за розміром","WAV — несжатий формат з вищою якістю звуку але більшим розміром файлу","WAV підтримує лише моно звук","WAV використовується лише для відео"],ans:1},
+  {q:"Який формат зображення підтримує анімацію?",opts:["JPG","PNG","BMP","GIF"],ans:3},
+  {q:"Який формат відео є відкритим стандартом і добре підтримується браузерами?",opts:["AVI","MP4 (H.264)","WMV","MOV"],ans:1},
+
+  // ── ПРАКТИЧНІ НАВИЧКИ ──
+  {q:"Що потрібно врахувати при виборі формату для збереження зображення для сайту?",opts:["Лише розмір файлу","Баланс між якістю зображення, розміром файлу та підтримкою прозорості","Лише кількість кольорів","Лише розмір у пікселях"],ans:1},
+  {q:"При створенні банера для соцмереж який тип графіки та формат оптимальний?",opts:["Растровий BMP для максимальної якості","PNG або JPG з оптимізованим розміром та роздільною здатністю 72 PPI","Векторний SVG з роздільною здатністю 300 DPI","Текстовий файл з описом банера"],ans:1}
+];
+
+var STORAGE_KEY = 'graphics_test_9_2024_v1';
+var BOT_TOKEN = '8726711053:AAGa1ambmqPzrUbGHXxDhY2hdQkIKB23QDM';
+var CHAT_ID = '326592966';
+
+var state = {
+  current:0,
+  answers:new Array(QUESTIONS.length).fill(null),
+  startTime:null,endTime:null,studentName:'',finished:false
+};
+var timerInterval=null, timeLeft=35*60;
+
+function checkLock(){
+  try{
+    var d=localStorage.getItem(STORAGE_KEY);
+    if(d){var p=JSON.parse(d);if(p.finished){document.getElementById('blocked-screen').classList.add('active');document.getElementById('blocked-info').textContent='Учень: '+(p.studentName||'—')+' | Завершено: '+(p.endTime||'—');return true;}}
+  }catch(e){}
+  return false;
+}
+function saveLock(f){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify({finished:f,studentName:state.studentName,endTime:new Date().toLocaleString('uk-UA')}));}catch(e){}
+}
+function updateTimerDisplay(){
+  var m=Math.floor(timeLeft/60),s=timeLeft%60,el=document.getElementById('timer');
+  el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  el.className='timer-box';
+  if(timeLeft<=300)el.classList.add('warn');
+  if(timeLeft<=60)el.classList.add('crit');
+}
+function startTimer(){
+  updateTimerDisplay();
+  timerInterval=setInterval(function(){timeLeft--;updateTimerDisplay();if(timeLeft<=0){clearInterval(timerInterval);finishTest();}},1000);
+}
+function startTest(){
+  var name=document.getElementById('student-name').value.trim();
+  if(!name){document.getElementById('student-name').style.borderColor='var(--red)';return;}
+  state.studentName=name;state.startTime=Date.now();saveLock(false);
+  document.getElementById('start-screen').style.display='none';
+  document.getElementById('quiz-screen').classList.add('active');
+  document.getElementById('hdr-name').textContent=name;
+  document.getElementById('hdr-total').textContent=QUESTIONS.length;
+  renderQuestion(0);startTimer();
+}
+function renderQuestion(idx){
+  var q=QUESTIONS[idx],total=QUESTIONS.length;
+  state.current=idx;
+  document.getElementById('hdr-q').textContent=idx+1;
+  document.getElementById('prog-label').textContent='Питання '+(idx+1)+' з '+total;
+  var pct=Math.round(idx/total*100);
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+  var keys=['A','B','C','D'],html='<div class="question-card"><div class="q-num">// ПИТАННЯ '+(idx+1)+' / '+total+'</div><div class="q-text">'+q.q+'</div><ul class="options-list">';
+  for(var i=0;i<q.opts.length;i++){var sel=state.answers[idx]===i?' selected':'';html+='<li><label class="option-label'+sel+'" onclick="selectOpt('+i+')"><span class="opt-key">['+keys[i]+']</span><span>'+q.opts[i]+'</span></label></li>';}
+  html+='</ul></div>';
+  document.getElementById('question-area').innerHTML=html;
+  document.getElementById('btn-prev').style.visibility=idx===0?'hidden':'visible';
+  var btn=document.getElementById('btn-next');
+  btn.textContent=idx===total-1?'ЗАВЕРШИТИ ✓':'ДАЛІ ▶';
+  btn.className='btn-nav primary';
+}
+function selectOpt(i){
+  state.answers[state.current]=i;
+  var lb=document.querySelectorAll('.option-label');
+  for(var j=0;j<lb.length;j++)lb[j].classList.toggle('selected',j===i);
+}
+function prevQ(){if(state.current>0)renderQuestion(state.current-1);}
+function nextQ(){if(state.current<QUESTIONS.length-1)renderQuestion(state.current+1);else finishTest();}
+
+function finishTest(){
+  clearInterval(timerInterval);
+  state.finished=true;state.endTime=Date.now();saveLock(true);
+  var correct=0,wrong=0,skip=0;
+  for(var i=0;i<QUESTIONS.length;i++){
+    if(state.answers[i]===null)skip++;
+    else if(state.answers[i]===QUESTIONS[i].ans)correct++;
+    else wrong++;
+  }
+  var pct=Math.round(correct/QUESTIONS.length*100);
+  var elapsed=Math.round((state.endTime-state.startTime)/1000);
+  var em=Math.floor(elapsed/60),es=elapsed%60;
+  var timeStr=String(em).padStart(2,'0')+':'+String(es).padStart(2,'0');
+  var grade,gc;
+  if(pct>=90){grade='12 (відмінно)';gc='var(--correct)';}
+  else if(pct>=75){grade='9\u201311 (добре)';gc='#aa66ff';}
+  else if(pct>=50){grade='6\u20138 (задовільно)';gc='var(--yellow)';}
+  else{grade='1\u20135 (незадовільно)';gc='var(--wrong)';}
+
+  document.getElementById('quiz-screen').classList.remove('active');
+  document.getElementById('quiz-screen').style.display='none';
+  document.getElementById('result-screen').classList.add('active');
+  document.getElementById('student-name-display').textContent='// '+state.studentName;
+  var sn=document.getElementById('score-num');sn.textContent=correct;sn.style.color=gc;
+  document.getElementById('score-total').textContent='/ '+QUESTIONS.length+' ('+pct+'%)';
+  var gb=document.getElementById('grade-badge');gb.textContent=grade;gb.style.border='1px solid '+gc;gb.style.color=gc;gb.style.background='rgba(0,0,0,.3)';
+  document.getElementById('st-correct').textContent=correct;
+  document.getElementById('st-wrong').textContent=wrong;
+  document.getElementById('st-skip').textContent=skip;
+  document.getElementById('st-time').textContent=timeStr;
+  document.getElementById('final-name-code').textContent=state.studentName;
+  document.getElementById('timer').textContent='00:00';
+
+  var rl=document.getElementById('review-list'),rh='';
+  for(var i=0;i<QUESTIONS.length;i++){
+    var ua=state.answers[i],isC=ua===QUESTIONS[i].ans,isS=ua===null;
+    var icon=isC?'✓':isS?'○':'✗',ic=isC?'var(--correct)':isS?'var(--yellow)':'var(--wrong)';
+    rh+='<div class="review-item"><div class="review-icon" style="color:'+ic+'">'+icon+'</div><div>';
+    rh+='<div class="review-q">'+(i+1)+'. '+QUESTIONS[i].q+'</div>';
+    rh+='<div class="review-a"><span class="lbl">Правильно:</span><span class="correct-ans">'+QUESTIONS[i].opts[QUESTIONS[i].ans]+'</span>';
+    if(!isC&&!isS)rh+='<br><span class="lbl">Твоя відповідь:</span><span class="user-ans">'+QUESTIONS[i].opts[ua]+'</span>';
+    if(isS)rh+='<br><span style="color:var(--yellow)">Пропущено</span>';
+    rh+='</div></div></div>';
+  }
+  rl.innerHTML=rh;
+  document.getElementById('prog-fill').style.width='100%';
+  document.getElementById('prog-pct').textContent='100%';
+  sendTelegram(state.studentName,correct,QUESTIONS.length,pct,grade,wrong,skip,timeStr);
+}
+
+async function sendTelegram(name,correct,total,pct,grade,wrong,skip,time){
+  var now=new Date().toLocaleString('uk-UA');
+  var msg='\uD83D\uDCCB *РЕЗУЛЬТАТ ТЕСТУ*\n'
+    +'\u2501'.repeat(18)+'\n'
+    +'\uD83D\uDC64 *Учень:* '+name+'\n'
+    +'\uD83D\uDCC5 *Час:* '+now+'\n'
+    +'\u23F1 *Витрачено:* '+time+'\n'
+    +'\u2501'.repeat(18)+'\n'
+    +'\u2705 Правильно: *'+correct+' / '+total+'* ('+pct+'%)\n'
+    +'\u274C Неправильно: '+wrong+'\n'
+    +'\u2B55 Пропущено: '+skip+'\n'
+    +'\uD83C\uDFC6 *Оцінка: '+grade+'*\n'
+    +'\u2501'.repeat(18)+'\n'
+    +'\uD83C\uDFA8 Тема: Графіка та Мультимедіа | 9 клас';
+
+  var statusEl=document.getElementById('send-status');
+  statusEl.style.color='var(--text-dim)';
+  statusEl.textContent='\u29F3 Надсилання результату...';
+  try{
+    var resp=await fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:CHAT_ID,text:msg,parse_mode:'Markdown'})
+    });
+    if(resp.ok){statusEl.style.color='var(--correct)';statusEl.textContent='\u2713 Результат надіслано вчителю';}
+    else throw new Error('bad');
+  }catch(e){
+    statusEl.style.color='var(--wrong)';
+    statusEl.textContent='\u26A0 Не вдалося надіслати — відкрий тест через GitHub Pages';
+  }
+}
+
+window.onload=function(){checkLock();};
+</script>
+</body>
+</html>
