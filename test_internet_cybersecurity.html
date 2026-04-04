@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEST :: Internet &amp; Cybersecurity :: Grade 9</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap');
+  :root {
+    --bg:#0a0c10;--panel:#0d1117;--border:#1a2e3a;
+    --green:#00ff88;--green-dim:#00c966;--green-dark:#004d2a;
+    --cyan:#00e5ff;--red:#ff3355;--yellow:#ffd700;
+    --text:#c9d1d9;--text-dim:#6e7681;--correct:#00ff88;--wrong:#ff3355;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,229,255,.012) 2px,rgba(0,229,255,.012) 4px);pointer-events:none;z-index:9999}
+
+  #blocked-screen{display:none;position:fixed;inset:0;background:#000;z-index:10000;align-items:center;justify-content:center;flex-direction:column;gap:24px;font-family:'Share Tech Mono',monospace}
+  #blocked-screen.active{display:flex}
+  .blocked-icon{font-size:80px;animation:pulse-red 1.5s infinite}
+  @keyframes pulse-red{0%,100%{text-shadow:0 0 20px var(--red),0 0 40px var(--red)}50%{text-shadow:0 0 5px var(--red)}}
+  .blocked-title{font-family:'Orbitron',monospace;font-size:28px;color:var(--red);letter-spacing:4px}
+  .blocked-msg{color:var(--text-dim);font-size:14px;text-align:center;max-width:460px;line-height:1.8}
+  .blocked-code{color:var(--cyan);font-size:12px;padding:12px 20px;border:1px solid var(--border);background:var(--panel)}
+
+  header{border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;background:var(--panel);position:sticky;top:0;z-index:100}
+  .logo{font-family:'Orbitron',monospace;font-size:13px;color:var(--cyan);letter-spacing:2px}
+  .logo span{color:var(--text-dim)}
+  .header-info{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim);display:flex;gap:24px}
+  .timer-box{font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--cyan);letter-spacing:2px;text-shadow:0 0 10px var(--cyan)}
+  .timer-box.warn{color:var(--yellow);text-shadow:0 0 10px var(--yellow)}
+  .timer-box.crit{color:var(--red);text-shadow:0 0 10px var(--red);animation:blink .5s infinite}
+  @keyframes blink{50%{opacity:.3}}
+
+  #start-screen{max-width:680px;margin:60px auto;padding:0 24px}
+  .start-title{font-family:'Orbitron',monospace;font-size:11px;color:var(--cyan);letter-spacing:4px;margin-bottom:8px}
+  .start-h1{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;line-height:1.2;margin-bottom:24px;background:linear-gradient(135deg,var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+  .info-card{border:1px solid var(--border);padding:16px;background:var(--panel);text-align:center}
+  .info-card .val{font-family:'Orbitron',monospace;font-size:28px;color:var(--cyan);display:block}
+  .info-card .lbl{font-size:11px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;display:block}
+  .warning-box{border:1px solid #7a2f2f;background:rgba(255,51,85,.07);padding:16px 20px;margin-bottom:32px;display:flex;gap:12px;align-items:flex-start}
+  .warning-box .icon{color:var(--red);font-size:20px;flex-shrink:0}
+  .warning-box p{font-size:13px;color:#c07070;line-height:1.6;font-family:'Share Tech Mono',monospace}
+  .warning-box strong{color:var(--red)}
+  .name-input-wrap{margin-bottom:28px}
+  .field-label{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--cyan);letter-spacing:2px;display:block;margin-bottom:8px}
+  .name-input{width:100%;background:var(--panel);border:1px solid var(--border);color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:16px;padding:12px 16px;outline:none;transition:border-color .2s}
+  .name-input:focus{border-color:var(--cyan)}
+  .btn-start{width:100%;padding:16px;background:transparent;border:2px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',monospace;font-size:14px;font-weight:700;letter-spacing:3px;cursor:pointer;position:relative;overflow:hidden;transition:all .2s}
+  .btn-start::before{content:'';position:absolute;inset:0;background:var(--cyan);transform:translateX(-100%);transition:transform .3s ease;z-index:0}
+  .btn-start:hover::before{transform:translateX(0)}
+  .btn-start:hover{color:#000}
+  .btn-start span{position:relative;z-index:1}
+
+  #quiz-screen{display:none;max-width:760px;margin:0 auto;padding:32px 24px 80px}
+  #quiz-screen.active{display:block}
+  .progress-bar-wrap{margin-bottom:32px}
+  .progress-meta{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);margin-bottom:8px}
+  .progress-track{height:3px;background:var(--panel);border:1px solid var(--border)}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#003a4d,var(--cyan));transition:width .4s ease;box-shadow:0 0 8px var(--cyan)}
+  .question-card{border:1px solid var(--border);background:var(--panel);padding:28px 28px 24px;margin-bottom:24px;position:relative;animation:fadeIn .3s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .question-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cyan);box-shadow:0 0 12px var(--cyan)}
+  .q-num{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:2px;margin-bottom:12px}
+  .q-text{font-size:17px;font-weight:600;line-height:1.5;color:var(--text);margin-bottom:20px}
+  .q-text code{font-family:'Share Tech Mono',monospace;background:rgba(0,229,255,.08);color:var(--cyan);padding:2px 6px;font-size:14px}
+  .options-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .option-label{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid var(--border);cursor:pointer;transition:all .15s;font-size:15px;font-weight:600;color:var(--text);user-select:none}
+  .option-label:hover{border-color:#00b8cc;background:rgba(0,229,255,.05)}
+  .option-label .opt-key{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--cyan);min-width:22px;letter-spacing:1px}
+  .option-label.selected{border-color:var(--cyan);background:rgba(0,229,255,.1)}
+  .option-label.correct{border-color:var(--correct);background:rgba(0,255,136,.15);color:var(--correct)}
+  .option-label.wrong{border-color:var(--wrong);background:rgba(255,51,85,.1);color:var(--wrong)}
+  .nav-row{display:flex;gap:12px;justify-content:flex-end;margin-top:8px}
+  .btn-nav{padding:10px 28px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .15s}
+  .btn-nav:hover{border-color:var(--cyan);color:var(--cyan)}
+  .btn-nav.primary{border-color:var(--cyan);color:var(--cyan);background:rgba(0,229,255,.05)}
+  .btn-nav.primary:hover{background:var(--cyan);color:#000}
+
+  #result-screen{display:none;max-width:760px;margin:0 auto;padding:32px 24px}
+  #result-screen.active{display:block;animation:fadeIn .4s ease}
+  .result-header{font-family:'Orbitron',monospace;font-size:11px;color:var(--text-dim);letter-spacing:4px;margin-bottom:20px}
+  .score-display{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+  .score-num{font-family:'Orbitron',monospace;font-size:80px;font-weight:900;line-height:1}
+  .score-total{font-family:'Share Tech Mono',monospace;font-size:20px;color:var(--text-dim)}
+  .grade-badge{display:inline-block;font-family:'Orbitron',monospace;font-size:13px;font-weight:700;padding:6px 16px;letter-spacing:2px;margin-bottom:32px}
+  .result-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+  .stat-card{border:1px solid var(--border);padding:16px;background:var(--panel);text-align:center}
+  .stat-card .sv{font-family:'Orbitron',monospace;font-size:24px;display:block;margin-bottom:4px}
+  .stat-card .sl{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:1px;display:block}
+  #send-status{font-family:'Share Tech Mono',monospace;font-size:12px;margin:12px 0 28px;text-align:center;min-height:18px}
+  .review-title{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim);letter-spacing:2px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  .review-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid rgba(26,46,58,.5);align-items:flex-start}
+  .review-icon{font-size:16px;flex-shrink:0;margin-top:2px}
+  .review-q{font-size:14px;font-weight:600;line-height:1.4;margin-bottom:4px}
+  .review-a{font-family:'Share Tech Mono',monospace;font-size:12px}
+  .review-a .lbl{color:var(--text-dim);margin-right:6px}
+  .review-a .correct-ans{color:var(--correct)}
+  .review-a .user-ans{color:var(--wrong)}
+  .closing-note{margin-top:40px;padding:20px;border:1px solid var(--border);background:var(--panel);font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);line-height:2;text-align:center}
+  .closing-note strong{color:var(--cyan)}
+</style>
+</head>
+<body>
+
+<div id="blocked-screen">
+  <div class="blocked-icon">&#x1F512;</div>
+  <div class="blocked-title">ACCESS DENIED</div>
+  <div class="blocked-msg">Тест вже був пройдений на цьому пристрої.<br>Повторний запуск неможливий.<br><br>Зверніться до вчителя для скидання.</div>
+  <div class="blocked-code" id="blocked-info"></div>
+</div>
+
+<header>
+  <div class="logo">&#x1F512; ІНФОРМАТИКА <span>// 9 КЛАС</span></div>
+  <div class="header-info">
+    <span id="hdr-name">&#x2014;</span>
+    <span>Q:<span id="hdr-q">0</span>/<span id="hdr-total">0</span></span>
+  </div>
+  <div class="timer-box" id="timer">30:00</div>
+</header>
+
+<div id="start-screen">
+  <div class="start-title">// ТЕСТУВАННЯ</div>
+  <div class="start-h1">Інтернет та<br>Кібербезпека</div>
+  <div class="info-grid">
+    <div class="info-card"><span class="val">35</span><span class="lbl">ПИТАНЬ</span></div>
+    <div class="info-card"><span class="val">30</span><span class="lbl">ХВИЛИН</span></div>
+    <div class="info-card"><span class="val">9</span><span class="lbl">КЛАС</span></div>
+  </div>
+  <div class="warning-box">
+    <div class="icon">&#x26A0;</div>
+    <p><strong>УВАГА!</strong> Тест можна пройти лише <strong>ОДИН РАЗ</strong> на цьому пристрої.<br>Після завершення повторний запуск буде заблоковано.<br>Переконайся що є підключення до Інтернету.</p>
+  </div>
+  <div class="name-input-wrap">
+    <label class="field-label" for="student-name">// ВВЕДИ ІМ'Я ТА ПРІЗВИЩЕ</label>
+    <input class="name-input" type="text" id="student-name" placeholder="Іванченко Олексій" autocomplete="off">
+  </div>
+  <button class="btn-start" onclick="startTest()"><span>&#x25B6; РОЗПОЧАТИ ТЕСТУВАННЯ</span></button>
+</div>
+
+<div id="quiz-screen">
+  <div class="progress-bar-wrap">
+    <div class="progress-meta">
+      <span id="prog-label">Питання 1 з 35</span>
+      <span id="prog-pct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div id="question-area"></div>
+  <div class="nav-row">
+    <button class="btn-nav" onclick="prevQ()" id="btn-prev">&#x25C4; НАЗАД</button>
+    <button class="btn-nav primary" onclick="nextQ()" id="btn-next">ДАЛІ &#x25BA;</button>
+  </div>
+</div>
+
+<div id="result-screen">
+  <div class="result-header">// РЕЗУЛЬТАТИ ТЕСТУВАННЯ</div>
+  <div id="student-name-display" style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text-dim);margin-bottom:16px;"></div>
+  <div class="score-display">
+    <div class="score-num" id="score-num" style="color:var(--cyan)">0</div>
+    <div class="score-total" id="score-total">/35</div>
+  </div>
+  <div class="grade-badge" id="grade-badge"></div>
+  <div class="result-stats">
+    <div class="stat-card"><span class="sv" id="st-correct" style="color:var(--correct)">0</span><span class="sl">ПРАВИЛЬНИХ</span></div>
+    <div class="stat-card"><span class="sv" id="st-wrong" style="color:var(--wrong)">0</span><span class="sl">НЕПРАВИЛЬНИХ</span></div>
+    <div class="stat-card"><span class="sv" id="st-skip" style="color:var(--yellow)">0</span><span class="sl">ПРОПУЩЕНИХ</span></div>
+    <div class="stat-card"><span class="sv" id="st-time" style="color:var(--cyan)">&#x2014;</span><span class="sl">ВИТРАЧЕНО</span></div>
+  </div>
+  <div id="send-status"></div>
+  <div class="review-title">// РОЗБІР ВІДПОВІДЕЙ</div>
+  <div id="review-list"></div>
+  <div class="closing-note">Результат збережено. Повторний запуск <strong>заблоковано</strong>.<br>Здай результати вчителю: <strong id="final-name-code">&#x2014;</strong></div>
+</div>
+
+<script>
+var QUESTIONS = [
+  // ПОШУКОВІ СИСТЕМИ
+  {q:"Що таке пошукова система?",opts:["Програма для створення сайтів","Інтернет-сервіс для пошуку інформації за запитом користувача","Поштовий сервіс","Браузер для перегляду сторінок"],ans:1},
+  {q:"Яка з наведених є пошуковою системою?",opts:["Microsoft Word","Google","Telegram","Windows Explorer"],ans:1},
+  {q:'Що відбудеться, якщо ввести запит у лапках: <code>"кібербезпека урок"</code>?',opts:["Пошук виключить ці слова","Пошукова система знайде сторінки з точною фразою","Пошук буде виконано лише в Wikipedia","Браузер відкриє першу знайдену сторінку автоматично"],ans:1},
+  {q:"Для чого використовується мінус у пошуковому запиті? Наприклад: <code>Python -змія</code>",opts:["Для пошуку математичних виразів","Щоб виключити слово зі результатів пошуку","Щоб знайти сторінки з дефісом","Для пошуку тільки на українських сайтах"],ans:1},
+  {q:"Як краще знайти визначення слова через Google?",opts:["Написати слово і натиснути Enter","Написати: <code>визначення: кібербезпека</code>","Відкрити Wikipedia вручну","Використати Ctrl+F на сторінці"],ans:1},
+  {q:"Як перевірити достовірність знайденої інформації в Інтернеті?",opts:["Довіряти будь-якому сайту з гарним дизайном","Перевірити кілька незалежних джерел та авторитетність сайту","Копіювати лише з перших трьох результатів пошуку","Перевіряти тільки дату публікації"],ans:1},
+  {q:"Яка ознака фейкової новини?",opts:["Є посилання на першоджерела","Написана відомим журналістом","Сенсаційний заголовок, відсутність джерел, емоційний тиск","Опублікована на офіційному сайті"],ans:2},
+  {q:"Що означає термін 'алгоритм ранжування' в пошукових системах?",opts:["Порядок букв в алфавіті","Система правил, за якою визначається порядок сайтів у результатах пошуку","Шифрування пошукового запиту","Блокування небезпечних сайтів"],ans:1},
+  // КІБЕРБЕЗПЕКА
+  {q:"Що таке кібербезпека?",opts:["Захист комп'ютерів, мереж і даних від цифрових атак та несанкціонованого доступу","Програма для прискорення Інтернету","Налаштування яскравості монітора","Антивірус для телефону"],ans:0},
+  {q:"Що таке комп'ютерний вірус?",opts:["Програма для прискорення роботи ПК","Шкідлива програма, що самокопіюється та завдає шкоди системі","Оновлення операційної системи","Тип бездротової мережі"],ans:1},
+  {q:"Чим троян відрізняється від вірусу?",opts:["Троян швидший за вірус","Троян маскується під корисну програму, але виконує шкідливі дії","Троян атакує лише телефони","Троян — це різновид спаму"],ans:1},
+  {q:"Що таке шпигунська програма (spyware)?",opts:["Програма для перегляду фільмів","Програма, що таємно збирає дані користувача та надсилає їх зловмисникам","Антивірусний сканер","Програма для блокування реклами"],ans:1},
+  {q:"Яке основне завдання антивірусної програми?",opts:["Прискорення завантаження сторінок","Виявлення, блокування та видалення шкідливого програмного забезпечення","Збільшення обсягу оперативної пам'яті","Налаштування Wi-Fi мережі"],ans:1},
+  {q:"Що таке брандмауер (firewall)?",opts:["Програма для редагування фото","Система захисту, що контролює вхідний та вихідний мережевий трафік за правилами","Тип вірусу, що блокує екран","Пристрій для підключення до Інтернету"],ans:1},
+  {q:"Яка з дій є безпечною під час користування Інтернетом?",opts:["Завантажувати програми з невідомих сайтів","Переходити за підозрілими посиланнями","Регулярно оновлювати програмне забезпечення та антивірус","Вимикати брандмауер для швидшого завантаження"],ans:2},
+  // ПАРОЛІ
+  {q:"Який з паролів є найнадійнішим?",opts:["password123","Іванов2005","qK#9mR!vL2@x","12345678"],ans:2},
+  {q:"Яка мінімальна рекомендована довжина надійного пароля?",opts:["4 символи","6 символів","8 символів","12 або більше символів"],ans:3},
+  {q:"Що таке двофакторна аутентифікація (2FA)?",opts:["Введення пароля двічі поспіль","Додатковий рівень захисту: після пароля потрібно підтвердити вхід (SMS, додаток)","Система з двома різними паролями","Захист з двома антивірусами одночасно"],ans:1},
+  {q:"Що НЕ можна робити з паролем?",opts:["Використовувати великі та малі літери","Додавати цифри та спецсимволи","Передавати пароль іншим людям або записувати на видному місці","Змінювати пароль раз на кілька місяців"],ans:2},
+  {q:"Чому небезпечно використовувати один пароль для всіх сервісів?",opts:["Це не небезпечно, це зручно","Якщо зловмисник дізнається один пароль — отримає доступ до всіх акаунтів","Один пароль важче зламати","Це заборонено законом"],ans:1},
+  // ФІШИНГ
+  {q:"Що таке фішинг?",opts:["Вид онлайн-риболовлі","Шахрайська техніка для отримання особистих даних через підроблені сайти або повідомлення","Спосіб прискорення Інтернету","Програма для блокування реклами"],ans:1},
+  {q:"Яка ознака фішингового листа?",opts:["Лист від відомого банку з вашим ім'ям","Прохання терміново підтвердити пароль або дані картки за посиланням","Рекламна розсилка з кнопкою відписки","Лист з офіційної адреси компанії"],ans:1},
+  {q:'Ти отримав лист: "Твій акаунт заблоковано! Перейди за посиланням ЗАРАЗ і введи пароль". Що робити?',opts:["Негайно перейти і ввести пароль","Переслати друзям","Не переходити, перевірити офіційний сайт сервісу напряму через браузер","Відповісти на лист і запитати підтвердження"],ans:2},
+  {q:"Як перевірити, чи є сайт безпечним перед введенням даних?",opts:["Перевірити що сайт виглядає красиво","Переконатися що адреса починається з <code>https://</code> та є іконка замка","Перевірити кількість реклами на сторінці","Подивитися скільки підписників у сайту в соцмережах"],ans:1},
+  {q:"Що означає <code>https://</code> на початку адреси сайту?",opts:["Сайт завантажується швидше","З'єднання зашифроване, дані передаються безпечно","Сайт перевірений Google","Сайт безкоштовний"],ans:1},
+  // EMAIL
+  {q:"З чого складається адреса електронної пошти?",opts:["Лише з імені користувача","Імені користувача, знаку @ та домену (наприклад: user@gmail.com)","Тільки з домену сайту","Номера телефону та коду країни"],ans:1},
+  {q:"Що таке 'тема листа' в електронній пошті?",opts:["Файл, прикріплений до листа","Короткий заголовок, що описує зміст листа","Адреса отримувача","Підпис відправника"],ans:1},
+  {q:"Що таке спам?",opts:["Важливі листи від банку","Небажані масові повідомлення рекламного або шахрайського характеру","Листи з вкладеними файлами","Системні повідомлення від пошти"],ans:1},
+  {q:"Яка небезпека може ховатися у вкладенні листа від невідомого відправника?",opts:["Вкладення завжди безпечні","Вкладення може містити вірус або шкідливу програму","Вкладення займає забагато місця","Вкладення може бути надто великим для завантаження"],ans:1},
+  {q:"Як правильно відповісти на діловий лист електронною поштою?",opts:["Написати лише 'ок'","Зберегти ввічливий тон, вказати тему, відповісти по суті","Видалити листування і написати новий лист","Переслати лист усім контактам"],ans:1},
+  // ХМАРНІ СЕРВІСИ
+  {q:"Що таке хмарні технології (хмарне сховище)?",opts:["Зберігання даних виключно на флешці","Зберігання та обробка даних на віддалених серверах через Інтернет","Вид бездротової мережі Bluetooth","Технологія стиснення файлів"],ans:1},
+  {q:"Яка перевага хмарного сховища (Google Drive, OneDrive)?",opts:["Працює лише на одному пристрої","Доступ до файлів з будь-якого пристрою з Інтернетом, автоматичне резервне копіювання","Файли зберігаються лише локально","Не потребує реєстрації"],ans:1},
+  {q:"Що означає 'спільний доступ' у Google Drive?",opts:["Усі файли стають публічними автоматично","Можливість надати іншим користувачам право переглядати або редагувати конкретний файл","Автоматичне надсилання файлів на пошту","Синхронізація з USB-накопичувачем"],ans:1},
+  // ПЕРСОНАЛЬНІ ДАНІ
+  {q:"Що відноситься до персональних даних?",opts:["Назва улюбленого фільму","Ім'я, прізвище, адреса, номер телефону, паспортні дані","Колір очей вигаданого персонажа","Назва операційної системи"],ans:1},
+  {q:"Що НЕ можна публікувати у відкритому доступі в соціальних мережах?",opts:["Фото з природи","Думки про книгу","Домашню адресу, номер телефону, паролі","Малюнки власного виробництва"],ans:2},
+  {q:"Навіщо налаштовувати приватність у соціальних мережах?",opts:["Щоб сторінка завантажувалась швидше","Щоб обмежити доступ сторонніх осіб до особистої інформації та фотографій","Щоб отримати більше підписників","Це не потрібно, всі дані публічні за замовчуванням"],ans:1}
+];
+
+var STORAGE_KEY = 'cybersec_test_9_2024_v1';
+var BOT_TOKEN = '8726711053:AAGa1ambmqPzrUbGHXxDhY2hdQkIKB23QDM';
+var CHAT_ID = '326592966';
+
+var state = {
+  current:0,
+  answers: new Array(QUESTIONS.length).fill(null),
+  startTime:null, endTime:null, studentName:'', finished:false
+};
+var timerInterval = null;
+var timeLeft = 30 * 60;
+
+function checkLock() {
+  try {
+    var data = localStorage.getItem(STORAGE_KEY);
+    if (data) {
+      var parsed = JSON.parse(data);
+      if (parsed.finished) {
+        document.getElementById('blocked-screen').classList.add('active');
+        document.getElementById('blocked-info').textContent = 'Учень: ' + (parsed.studentName||'—') + ' | Завершено: ' + (parsed.endTime||'—');
+        return true;
+      }
+    }
+  } catch(e) {}
+  return false;
+}
+
+function saveLock(finished) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      finished:finished, studentName:state.studentName,
+      endTime:new Date().toLocaleString('uk-UA')
+    }));
+  } catch(e) {}
+}
+
+function updateTimerDisplay() {
+  var m = Math.floor(timeLeft/60), s = timeLeft%60;
+  var el = document.getElementById('timer');
+  el.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  el.className = 'timer-box';
+  if (timeLeft <= 300) el.classList.add('warn');
+  if (timeLeft <= 60) el.classList.add('crit');
+}
+
+function startTimer() {
+  updateTimerDisplay();
+  timerInterval = setInterval(function() {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) { clearInterval(timerInterval); finishTest(); }
+  }, 1000);
+}
+
+function startTest() {
+  var name = document.getElementById('student-name').value.trim();
+  if (!name) { document.getElementById('student-name').style.borderColor='var(--red)'; return; }
+  state.studentName = name;
+  state.startTime = Date.now();
+  saveLock(false);
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('quiz-screen').classList.add('active');
+  document.getElementById('hdr-name').textContent = name;
+  document.getElementById('hdr-total').textContent = QUESTIONS.length;
+  renderQuestion(0);
+  startTimer();
+}
+
+function renderQuestion(idx) {
+  var q = QUESTIONS[idx], total = QUESTIONS.length;
+  state.current = idx;
+  document.getElementById('hdr-q').textContent = idx+1;
+  document.getElementById('prog-label').textContent = 'Питання '+(idx+1)+' з '+total;
+  var pct = Math.round(idx/total*100);
+  document.getElementById('prog-pct').textContent = pct+'%';
+  document.getElementById('prog-fill').style.width = pct+'%';
+  var keys = ['A','B','C','D'];
+  var html = '<div class="question-card"><div class="q-num">// ПИТАННЯ '+(idx+1)+' / '+total+'</div><div class="q-text">'+q.q+'</div><ul class="options-list">';
+  for (var i=0;i<q.opts.length;i++) {
+    var sel = state.answers[idx]===i?' selected':'';
+    html += '<li><label class="option-label'+sel+'" onclick="selectOpt('+i+')"><span class="opt-key">['+keys[i]+']</span><span>'+q.opts[i]+'</span></label></li>';
+  }
+  html += '</ul></div>';
+  document.getElementById('question-area').innerHTML = html;
+  document.getElementById('btn-prev').style.visibility = idx===0?'hidden':'visible';
+  var isLast = idx===total-1;
+  var btn = document.getElementById('btn-next');
+  btn.textContent = isLast ? 'ЗАВЕРШИТИ \u2713' : 'DAL\u0406 \u25BA';
+  btn.textContent = isLast ? 'ЗАВЕРШИТИ ✓' : 'ДАЛІ ▶';
+  btn.className = 'btn-nav primary';
+}
+
+function selectOpt(i) {
+  state.answers[state.current] = i;
+  var labels = document.querySelectorAll('.option-label');
+  for (var j=0;j<labels.length;j++) labels[j].classList.toggle('selected', j===i);
+}
+
+function prevQ() { if (state.current>0) renderQuestion(state.current-1); }
+function nextQ() {
+  if (state.current<QUESTIONS.length-1) renderQuestion(state.current+1);
+  else finishTest();
+}
+
+function finishTest() {
+  clearInterval(timerInterval);
+  state.finished = true;
+  state.endTime = Date.now();
+  saveLock(true);
+
+  var correct=0, wrong=0, skip=0;
+  for (var i=0;i<QUESTIONS.length;i++) {
+    if (state.answers[i]===null) skip++;
+    else if (state.answers[i]===QUESTIONS[i].ans) correct++;
+    else wrong++;
+  }
+
+  var pct = Math.round(correct/QUESTIONS.length*100);
+  var elapsed = Math.round((state.endTime-state.startTime)/1000);
+  var em = Math.floor(elapsed/60), es = elapsed%60;
+  var timeStr = String(em).padStart(2,'0')+':'+String(es).padStart(2,'0');
+
+  var grade, gc;
+  if (pct>=90){grade='12 (відмінно)';gc='var(--correct)';}
+  else if (pct>=75){grade='9\u201311 (добре)';gc='#66ff99';}
+  else if (pct>=50){grade='6\u20138 (задовільно)';gc='var(--yellow)';}
+  else{grade='1\u20135 (незадовільно)';gc='var(--wrong)';}
+
+  document.getElementById('quiz-screen').classList.remove('active');
+  document.getElementById('quiz-screen').style.display='none';
+  document.getElementById('result-screen').classList.add('active');
+  document.getElementById('student-name-display').textContent='// '+state.studentName;
+
+  var sn=document.getElementById('score-num');
+  sn.textContent=correct; sn.style.color=gc;
+  document.getElementById('score-total').textContent='/ '+QUESTIONS.length+' ('+pct+'%)';
+
+  var gb=document.getElementById('grade-badge');
+  gb.textContent=grade; gb.style.border='1px solid '+gc;
+  gb.style.color=gc; gb.style.background='rgba(0,0,0,.3)';
+
+  document.getElementById('st-correct').textContent=correct;
+  document.getElementById('st-wrong').textContent=wrong;
+  document.getElementById('st-skip').textContent=skip;
+  document.getElementById('st-time').textContent=timeStr;
+  document.getElementById('final-name-code').textContent=state.studentName;
+  document.getElementById('timer').textContent='00:00';
+
+  var rl=document.getElementById('review-list'), rh='';
+  for (var i=0;i<QUESTIONS.length;i++) {
+    var ua=state.answers[i];
+    var isC=ua===QUESTIONS[i].ans, isS=ua===null;
+    var icon=isC?'✓':isS?'○':'✗';
+    var ic=isC?'var(--correct)':isS?'var(--yellow)':'var(--wrong)';
+    rh+='<div class="review-item"><div class="review-icon" style="color:'+ic+'">'+icon+'</div><div>';
+    rh+='<div class="review-q">'+(i+1)+'. '+QUESTIONS[i].q+'</div>';
+    rh+='<div class="review-a"><span class="lbl">Правильно:</span><span class="correct-ans">'+QUESTIONS[i].opts[QUESTIONS[i].ans]+'</span>';
+    if (!isC&&!isS) rh+='<br><span class="lbl">Твоя відповідь:</span><span class="user-ans">'+QUESTIONS[i].opts[ua]+'</span>';
+    if (isS) rh+='<br><span style="color:var(--yellow)">Пропущено</span>';
+    rh+='</div></div></div>';
+  }
+  rl.innerHTML=rh;
+
+  document.getElementById('prog-fill').style.width='100%';
+  document.getElementById('prog-pct').textContent='100%';
+
+  sendTelegram(state.studentName, correct, QUESTIONS.length, pct, grade, wrong, skip, timeStr);
+}
+
+async function sendTelegram(name, correct, total, pct, grade, wrong, skip, time) {
+  var now = new Date().toLocaleString('uk-UA');
+  var msg = '\uD83D\uDCCB *РЕЗУЛЬТАТ ТЕСТУ*\n'
+    + '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n'
+    + '\uD83D\uDC64 *Учень:* ' + name + '\n'
+    + '\uD83D\uDCC5 *Час:* ' + now + '\n'
+    + '\u23F1 *Витрачено:* ' + time + '\n'
+    + '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n'
+    + '\u2705 Правильно: *' + correct + ' / ' + total + '* (' + pct + '%)\n'
+    + '\u274C Неправильно: ' + wrong + '\n'
+    + '\u2B55 Пропущено: ' + skip + '\n'
+    + '\uD83C\uDFC6 *Оцінка: ' + grade + '*\n'
+    + '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n'
+    + '\uD83D\uDCDA Тема: Інтернет та Кібербезпека | 9 клас';
+
+  var statusEl = document.getElementById('send-status');
+  statusEl.style.color = 'var(--text-dim)';
+  statusEl.textContent = '\u29F3 Надсилання результату...';
+
+  try {
+    var resp = await fetch('https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({chat_id:CHAT_ID, text:msg, parse_mode:'Markdown'})
+    });
+    if (resp.ok) {
+      statusEl.style.color = 'var(--correct)';
+      statusEl.textContent = '\u2713 Результат надіслано вчителю';
+    } else { throw new Error('bad'); }
+  } catch(e) {
+    statusEl.style.color = 'var(--wrong)';
+    statusEl.textContent = '\u26A0 Не вдалося надіслати (немає Інтернету)';
+  }
+}
+
+window.onload = function() { checkLock(); };
+</script>
+</body>
+</html>
