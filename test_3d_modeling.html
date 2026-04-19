@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEST :: 3D Modeling :: Grade 9</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap');
+  :root{
+    --bg:#0a0c10;--panel:#0d1117;--border:#3a2a1a;
+    --accent:#ff8c1a;--accent-dim:#cc6b0d;--accent-dark:#4d2900;
+    --cyan:#00e5ff;--red:#ff3355;--yellow:#ffd700;
+    --text:#c9d1d9;--text-dim:#6e7681;--correct:#00ff88;--wrong:#ff3355;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,140,26,.012) 2px,rgba(255,140,26,.012) 4px);pointer-events:none;z-index:9999}
+
+  #blocked-screen,#cheat-screen{display:none;position:fixed;inset:0;background:#000;z-index:10000;align-items:center;justify-content:center;flex-direction:column;gap:24px;font-family:'Share Tech Mono',monospace;padding:20px}
+  #blocked-screen.active,#cheat-screen.active{display:flex}
+  .blocked-icon{font-size:80px;animation:pulse-red 1.5s infinite}
+  @keyframes pulse-red{0%,100%{text-shadow:0 0 20px var(--red),0 0 40px var(--red)}50%{text-shadow:0 0 5px var(--red)}}
+  .blocked-title{font-family:'Orbitron',monospace;font-size:28px;color:var(--red);letter-spacing:4px;text-align:center}
+  .blocked-msg{color:var(--text-dim);font-size:14px;text-align:center;max-width:500px;line-height:1.8}
+  .blocked-code{color:var(--accent);font-size:12px;padding:12px 20px;border:1px solid var(--border);background:var(--panel);text-align:center}
+
+  /* Warning overlay for tab switch */
+  #tab-warning{display:none;position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9998;background:rgba(255,51,85,.95);color:#fff;padding:14px 24px;border:2px solid #ff6677;font-family:'Share Tech Mono',monospace;font-size:14px;letter-spacing:1px;box-shadow:0 0 30px rgba(255,51,85,.6);animation:warnPulse 0.5s ease-out}
+  #tab-warning.active{display:block}
+  @keyframes warnPulse{from{transform:translate(-50%,-20px);opacity:0}to{transform:translateX(-50%);opacity:1}}
+
+  header{border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;background:var(--panel);position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:12px}
+  .logo{font-family:'Orbitron',monospace;font-size:13px;color:var(--accent);letter-spacing:2px}
+  .logo span{color:var(--text-dim)}
+  .header-info{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim);display:flex;gap:20px;flex-wrap:wrap}
+  .tab-counter{color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:12px}
+  .tab-counter.warn{color:var(--red);animation:blink .8s infinite}
+  .timer-box{font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--accent);letter-spacing:2px;text-shadow:0 0 10px var(--accent)}
+  .timer-box.warn{color:var(--yellow);text-shadow:0 0 10px var(--yellow)}
+  .timer-box.crit{color:var(--red);text-shadow:0 0 10px var(--red);animation:blink .5s infinite}
+  @keyframes blink{50%{opacity:.3}}
+
+  #start-screen{max-width:680px;margin:60px auto;padding:0 24px}
+  .start-title{font-family:'Orbitron',monospace;font-size:11px;color:var(--accent);letter-spacing:4px;margin-bottom:8px}
+  .start-h1{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;line-height:1.2;margin-bottom:24px;background:linear-gradient(135deg,var(--accent),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+  .info-card{border:1px solid var(--border);padding:16px;background:var(--panel);text-align:center}
+  .info-card .val{font-family:'Orbitron',monospace;font-size:28px;color:var(--accent);display:block}
+  .info-card .lbl{font-size:11px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;display:block}
+  .warning-box{border:1px solid #7a2f2f;background:rgba(255,51,85,.07);padding:16px 20px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start}
+  .warning-box .icon{color:var(--red);font-size:20px;flex-shrink:0}
+  .warning-box p{font-size:13px;color:#c07070;line-height:1.6;font-family:'Share Tech Mono',monospace}
+  .warning-box strong{color:var(--red)}
+  .rules-box{border:1px solid var(--border);background:var(--panel);padding:16px 20px;margin-bottom:32px;font-family:'Share Tech Mono',monospace;font-size:12px;line-height:1.8;color:var(--text-dim)}
+  .rules-box .rule-item{color:var(--text)}
+  .rules-box strong{color:var(--accent)}
+
+  .name-input-wrap{margin-bottom:28px}
+  .field-label{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:2px;display:block;margin-bottom:8px}
+  .name-input{width:100%;background:var(--panel);border:1px solid var(--border);color:var(--accent);font-family:'Share Tech Mono',monospace;font-size:16px;padding:12px 16px;outline:none;transition:border-color .2s}
+  .name-input:focus{border-color:var(--accent)}
+  .btn-start{width:100%;padding:16px;background:transparent;border:2px solid var(--accent);color:var(--accent);font-family:'Orbitron',monospace;font-size:14px;font-weight:700;letter-spacing:3px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+  .btn-start:hover{background:var(--accent);color:#000}
+
+  #quiz-screen{display:none;max-width:760px;margin:0 auto;padding:32px 24px 80px}
+  #quiz-screen.active{display:block}
+  .progress-bar-wrap{margin-bottom:32px}
+  .progress-meta{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);margin-bottom:8px}
+  .progress-track{height:3px;background:var(--panel);border:1px solid var(--border)}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent-dark),var(--accent));transition:width .4s ease;box-shadow:0 0 8px var(--accent)}
+  .question-card{border:1px solid var(--border);background:var(--panel);padding:28px 28px 24px;margin-bottom:24px;position:relative;animation:fadeIn .3s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .question-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+  .q-num{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:2px;margin-bottom:12px}
+  .q-text{font-size:17px;font-weight:600;line-height:1.5;color:var(--text);margin-bottom:20px}
+  .options-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .option-label{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid var(--border);cursor:pointer;transition:all .15s;font-size:15px;font-weight:600;color:var(--text);user-select:none}
+  .option-label:hover{border-color:var(--accent-dim);background:rgba(255,140,26,.05)}
+  .option-label .opt-key{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent);min-width:22px;letter-spacing:1px}
+  .option-label.selected{border-color:var(--accent);background:rgba(255,140,26,.1)}
+  .nav-row{display:flex;gap:12px;justify-content:flex-end;margin-top:8px}
+  .btn-nav{padding:10px 28px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .15s}
+  .btn-nav:hover{border-color:var(--accent);color:var(--accent)}
+  .btn-nav.primary{border-color:var(--accent);color:var(--accent);background:rgba(255,140,26,.05)}
+  .btn-nav.primary:hover{background:var(--accent);color:#000}
+
+  #result-screen{display:none;max-width:760px;margin:0 auto;padding:32px 24px}
+  #result-screen.active{display:block;animation:fadeIn .4s ease}
+  .result-header{font-family:'Orbitron',monospace;font-size:11px;color:var(--text-dim);letter-spacing:4px;margin-bottom:20px}
+  .score-display{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+  .score-num{font-family:'Orbitron',monospace;font-size:80px;font-weight:900;line-height:1}
+  .score-total{font-family:'Share Tech Mono',monospace;font-size:20px;color:var(--text-dim)}
+  .grade-badge{display:inline-block;font-family:'Orbitron',monospace;font-size:13px;font-weight:700;padding:6px 16px;letter-spacing:2px;margin-bottom:32px}
+  .result-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+  .stat-card{border:1px solid var(--border);padding:16px;background:var(--panel);text-align:center}
+  .stat-card .sv{font-family:'Orbitron',monospace;font-size:24px;display:block;margin-bottom:4px}
+  .stat-card .sl{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:1px;display:block}
+  #send-status{font-family:'Share Tech Mono',monospace;font-size:12px;margin:12px 0 28px;text-align:center;min-height:18px}
+  .closing-note{margin-top:40px;padding:20px;border:1px solid var(--border);background:var(--panel);font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);line-height:2;text-align:center}
+  .closing-note strong{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<div id="blocked-screen">
+  <div class="blocked-icon">&#x1F512;</div>
+  <div class="blocked-title">ACCESS DENIED</div>
+  <div class="blocked-msg">Тест вже був пройдений на цьому пристрої.<br>Повторний запуск неможливий.<br><br>Зверніться до вчителя для скидання.</div>
+  <div class="blocked-code" id="blocked-info"></div>
+</div>
+
+<div id="cheat-screen">
+  <div class="blocked-icon">&#x1F6AB;</div>
+  <div class="blocked-title">ТЕСТ ЗАБЛОКОВАНО</div>
+  <div class="blocked-msg">Виявлено <strong style="color:var(--red)">3 переходи</strong> на інші вкладки чи програми.<br>Тест припинено, результат надіслано вчителю з позначкою порушення.<br><br>Зверніться до вчителя для пояснень.</div>
+  <div class="blocked-code" id="cheat-info"></div>
+</div>
+
+<div id="tab-warning"></div>
+
+<header>
+  <div class="logo">&#x1F9CA; ІНФОРМАТИКА <span>// 9 КЛАС</span></div>
+  <div class="header-info">
+    <span id="hdr-name">&#x2014;</span>
+    <span>Q:<span id="hdr-q">0</span>/<span id="hdr-total">0</span></span>
+    <span class="tab-counter" id="tab-counter">Переходів: 0/3</span>
+  </div>
+  <div class="timer-box" id="timer">20:00</div>
+</header>
+
+<div id="start-screen">
+  <div class="start-title">// ТЕСТУВАННЯ</div>
+  <div class="start-h1">3D моделювання<br>Tinkercad &amp; Blender</div>
+  <div class="info-grid">
+    <div class="info-card"><span class="val">25</span><span class="lbl">ПИТАНЬ</span></div>
+    <div class="info-card"><span class="val">20</span><span class="lbl">ХВИЛИН</span></div>
+    <div class="info-card"><span class="val">9</span><span class="lbl">КЛАС</span></div>
+  </div>
+  <div class="warning-box">
+    <div class="icon">&#x26A0;</div>
+    <p><strong>УВАГА!</strong> Тест можна пройти лише <strong>ОДИН РАЗ</strong> на цьому пристрої.<br>Після завершення повторний запуск буде заблоковано.</p>
+  </div>
+  <div class="rules-box">
+    <div class="rule-item">&gt; <strong>ЧЕСНІСТЬ:</strong> під час тесту система відстежує переходи на інші вкладки та програми.</div>
+    <div class="rule-item">&gt; <strong>ЛІМІТ:</strong> після <strong>3 переходів</strong> тест буде автоматично заблоковано.</div>
+    <div class="rule-item">&gt; <strong>ЗВІТ:</strong> всі переходи та кількість відображаються у звіті вчителю.</div>
+    <div class="rule-item">&gt; Переконайся що всі вікна з підказками закриті перед початком.</div>
+  </div>
+  <div class="name-input-wrap">
+    <label class="field-label" for="student-name">// ВВЕДИ ІМ'Я ТА ПРІЗВИЩЕ</label>
+    <input class="name-input" type="text" id="student-name" placeholder="Іванченко Олексій" autocomplete="off">
+  </div>
+  <button class="btn-start" id="btn-start-main">&#x25B6; РОЗПОЧАТИ ТЕСТУВАННЯ</button>
+</div>
+
+<div id="quiz-screen">
+  <div class="progress-bar-wrap">
+    <div class="progress-meta">
+      <span id="prog-label">Питання 1 з 25</span>
+      <span id="prog-pct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div id="question-area"></div>
+  <div class="nav-row">
+    <button class="btn-nav" onclick="prevQ()" id="btn-prev">&#x25C4; НАЗАД</button>
+    <button class="btn-nav primary" onclick="nextQ()" id="btn-next">ДАЛІ &#x25BA;</button>
+  </div>
+</div>
+
+<div id="result-screen">
+  <div class="result-header">// РЕЗУЛЬТАТИ ТЕСТУВАННЯ</div>
+  <div id="student-name-display" style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text-dim);margin-bottom:16px;"></div>
+  <div class="score-display">
+    <div class="score-num" id="score-num" style="color:var(--accent)">0</div>
+    <div class="score-total" id="score-total">/25</div>
+  </div>
+  <div class="grade-badge" id="grade-badge"></div>
+  <div class="result-stats">
+    <div class="stat-card"><span class="sv" id="st-correct" style="color:var(--correct)">0</span><span class="sl">ПРАВИЛЬНИХ</span></div>
+    <div class="stat-card"><span class="sv" id="st-wrong" style="color:var(--wrong)">0</span><span class="sl">НЕПРАВИЛЬНИХ</span></div>
+    <div class="stat-card"><span class="sv" id="st-skip" style="color:var(--yellow)">0</span><span class="sl">ПРОПУЩЕНИХ</span></div>
+    <div class="stat-card"><span class="sv" id="st-switches" style="color:var(--accent)">0</span><span class="sl">ПЕРЕХОДІВ</span></div>
+  </div>
+  <div id="send-status"></div>
+  <div class="closing-note">Результат збережено. Повторний запуск <strong>заблоковано</strong>.<br>Здай результати вчителю: <strong id="final-name-code">&#x2014;</strong></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// QUESTIONS — answers hidden via base64 encryption at bottom
+// ═══════════════════════════════════════════════════════════════════
+var QUESTIONS = [
+  {q:"Що таке 3D-моделювання?",opts:["Створення двовимірних малюнків у Photoshop","Процес створення тривимірних об'єктів за допомогою спеціальних програм","Друк фотографій на принтері","Обробка відео в редакторі"]},
+  {q:"Що таке Tinkercad?",opts:["Платформа для написання коду C++","Онлайн-інструмент для простого 3D-моделювання у браузері","Професійний відеоредактор","Текстовий редактор"]},
+  {q:"Що таке Blender?",opts:["Програма для обробки звуку","Потужний безкоштовний 3D-редактор для моделювання, анімації та рендерингу","Додаток для редагування фото","Браузер для Інтернету"]},
+  {q:"Яка програма краще підходить для початківців у 3D-моделюванні?",opts:["Autodesk Maya","Blender","Tinkercad","ZBrush"]},
+  {q:"У якому середовищі працює Tinkercad?",opts:["Встановлюється на комп'ютер як десктопна програма","Працює онлайн у веб-браузері","Доступний лише на iOS","Вимагає встановлення Docker"]},
+  {q:"Blender — це програма:",opts:["Платна, вартістю понад 500$","Безкоштовна та з відкритим кодом","Безкоштовна лише для студентів","Доступна лише за підпискою"]},
+  {q:"Що є основним будівельним блоком (примітивом) у 3D-моделюванні?",opts:["Піксель","Полігон (зазвичай трикутник або чотирикутник)","Байт","Символ шрифту"]},
+  {q:"Що таке вершина (vertex) у 3D-моделі?",opts:["Найвища точка об'єкта на екрані","Точка у тривимірному просторі з координатами X, Y, Z","Тип освітлення","Формат файлу"]},
+  {q:"Що таке грань (face) у 3D-моделі?",opts:["Передня сторона об'єкта","Плоска поверхня, утворена з'єднанням вершин ребрами (зазвичай трикутник або чотирикутник)","Ефект розмиття","Тип матеріалу"]},
+  {q:"Що таке ребро (edge) у 3D-моделі?",opts:["Край екрана монітора","Лінія, що з'єднує дві вершини","Тип анімації","Формат файлу .edge"]},
+  {q:"Які осі використовуються у тривимірному просторі?",opts:["Лише X та Y","X, Y та Z","A, B та C","Північ, Південь, Схід"]},
+  {q:"Що таке рендеринг (rendering) у 3D?",opts:["Процес малювання олівцем","Процес обчислення фінального зображення з 3D-сцени з урахуванням освітлення, матеріалів, тіней","Експорт моделі в текстовий файл","Видалення об'єктів зі сцени"]},
+  {q:"Що таке текстура у 3D?",opts:["Фізична шорсткість поверхні монітора","2D-зображення, що накладається на 3D-модель для надання їй вигляду (дерево, метал тощо)","Тип 3D-принтера","Анімаційний ефект"]},
+  {q:"Для чого використовується 3D-моделювання у реальному світі?",opts:["Лише для ігор","У кіно, іграх, архітектурі, медицині, інженерії, 3D-друці, дизайні","Лише для шкільних презентацій","Лише для веб-сайтів"]},
+  {q:"Що таке 3D-друк?",opts:["Друк фотографій на звичайному принтері","Процес створення фізичного об'єкта шар за шаром за 3D-моделлю","Друк на тканині","Сканування паперових документів"]},
+  {q:"У якому форматі зазвичай зберігається 3D-модель для друку?",opts:[".DOCX",".MP4",".STL або .OBJ",".JPG"]},
+  {q:"Що таке скульптинг (sculpting) у Blender?",opts:["Вид анімації","Техніка моделювання де ти 'ліпиш' модель як глину за допомогою пензлів","Експорт в STL","Тип освітлення сцени"]},
+  {q:"Що таке UV-розгортка (UV mapping)?",opts:["Фільтр ультрафіолетового випромінювання","Процес 'розгортання' 3D-моделі у 2D площину для накладення текстур","Тип матеріалу","Анімаційний метод"]},
+  {q:"Що таке буліан (Boolean) операції у 3D?",opts:["Логічні змінні true/false","Операції з'єднання, віднімання або перетину об'єктів для створення складних форм","Тип світла","Формат експорту"]},
+  {q:"Що таке модифікатор (modifier) у Blender?",opts:["Клавіша Shift на клавіатурі","Неруйнівний спосіб змінити геометрію об'єкта (дзеркало, згладжування, масив)","Антивірусний плагін","Тип шрифту"]},
+  {q:"Що таке анімація у 3D-редакторі?",opts:["Малювання на папері","Створення руху 3D-об'єктів у часі через ключові кадри (keyframes)","Експорт зображення","Налаштування яскравості"]},
+  {q:"Що таке рігінг (rigging)?",opts:["Встановлення освітлення","Створення 'скелета' для 3D-моделі, що дозволяє її анімувати як ляльку","Оптимізація розміру файлу","Налаштування камери"]},
+  {q:"Чим відрізняється полігональне моделювання від скульптингу?",opts:["Нічим, це одне й те саме","Полігональне — точне редагування вершин/ребер/граней, скульптинг — інтуїтивне 'ліплення' пензлями","Скульптинг лише для друку","Полігональне лише для ігор"]},
+  {q:"Що означає термін 'low-poly'?",opts:["Модель з низькою якістю текстур","3D-модель з невеликою кількістю полігонів — швидше рендериться, використовується в іграх","Безкоштовна модель","Модель без кольору"]},
+  {q:"Що таке фізично коректний рендеринг (PBR)?",opts:["Рендеринг лише на потужних серверах","Підхід де матеріали і освітлення імітують реальні фізичні властивості — дає фотореалістичний результат","Рендеринг у чорно-білому режимі","Рендеринг без тіней"]}
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// ENCRYPTED ANSWER KEY — formula: (index*7+13) % 4 offset
+// Student sees only meaningless base64 string
+// ═══════════════════════════════════════════════════════════════════
+var _K = "MjEwMDIxMDMyMTAzMjEwMDIxMDMyMTAzMg==";
+function _getAns(idx) {
+  var decoded = atob(_K);
+  var enc = parseInt(decoded.charAt(idx), 10);
+  return ((enc - (idx * 7 + 13)) % 4 + 4) % 4;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════════
+var STORAGE_KEY = 'test_3d_modeling_9_v1';
+var BOT_TOKEN = '8726711053:AAGa1ambmqPzrUbGHXxDhY2hdQkIKB23QDM';
+var CHAT_ID = '326592966';
+var MAX_TAB_SWITCHES = 3;
+
+var state = {
+  current:0,
+  answers:new Array(QUESTIONS.length).fill(null),
+  startTime:null, endTime:null, studentName:'', finished:false,
+  tabSwitches:0, cheatBlocked:false, testActive:false
+};
+var timerInterval = null;
+var timeLeft = 20 * 60;
+
+// ═══════════════════════════════════════════════════════════════════
+// LOCK MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════
+function checkLock(){
+  try{
+    var d = localStorage.getItem(STORAGE_KEY);
+    if(d){
+      var p = JSON.parse(d);
+      if(p.finished){
+        document.getElementById('blocked-screen').classList.add('active');
+        document.getElementById('blocked-info').textContent = 'Учень: '+(p.studentName||'—')+' | Завершено: '+(p.endTime||'—');
+        return true;
+      }
+    }
+  }catch(e){}
+  return false;
+}
+function saveLock(finished){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      finished:finished, studentName:state.studentName,
+      endTime:new Date().toLocaleString('uk-UA')
+    }));
+  }catch(e){}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TAB SWITCH DETECTION
+// ═══════════════════════════════════════════════════════════════════
+function onTabSwitch(){
+  if(!state.testActive || state.finished) return;
+  state.tabSwitches++;
+  updateTabCounter();
+  showTabWarning();
+  if(state.tabSwitches >= MAX_TAB_SWITCHES){
+    blockForCheating();
+  }
+}
+
+function updateTabCounter(){
+  var el = document.getElementById('tab-counter');
+  el.textContent = 'Переходів: ' + state.tabSwitches + '/' + MAX_TAB_SWITCHES;
+  if(state.tabSwitches >= 2) el.classList.add('warn');
+}
+
+function showTabWarning(){
+  var el = document.getElementById('tab-warning');
+  var left = MAX_TAB_SWITCHES - state.tabSwitches;
+  if(left > 0){
+    el.textContent = '⚠ ВИЯВЛЕНО ПЕРЕХІД! Залишилось спроб: ' + left;
+  } else {
+    el.textContent = '⛔ ЛІМІТ ВИЧЕРПАНО — ТЕСТ ЗАБЛОКОВАНО';
+  }
+  el.classList.add('active');
+  setTimeout(function(){ el.classList.remove('active'); }, 3500);
+}
+
+function blockForCheating(){
+  state.cheatBlocked = true;
+  state.testActive = false;
+  clearInterval(timerInterval);
+  document.getElementById('cheat-info').textContent = 'Учень: ' + state.studentName + ' | Переходів: ' + state.tabSwitches;
+  document.getElementById('cheat-screen').classList.add('active');
+
+  // Calculate partial results and send to teacher
+  var correct=0, wrong=0, skip=0;
+  for(var i=0;i<QUESTIONS.length;i++){
+    if(state.answers[i]===null) skip++;
+    else if(state.answers[i]===_getAns(i)) correct++;
+    else wrong++;
+  }
+  var elapsed = Math.round((Date.now()-state.startTime)/1000);
+  var em=Math.floor(elapsed/60), es=elapsed%60;
+  var timeStr = String(em).padStart(2,'0')+':'+String(es).padStart(2,'0');
+  saveLock(true);
+  sendTelegram(state.studentName, correct, QUESTIONS.length, Math.round(correct/QUESTIONS.length*100),
+    'ЗАБЛОКОВАНО (порушення)', wrong, skip, timeStr, state.tabSwitches, true);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════════════════════════════════
+function updateTimerDisplay(){
+  var m=Math.floor(timeLeft/60), s=timeLeft%60;
+  var el=document.getElementById('timer');
+  el.textContent = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  el.className = 'timer-box';
+  if(timeLeft<=180) el.classList.add('warn');
+  if(timeLeft<=30) el.classList.add('crit');
+}
+function startTimer(){
+  updateTimerDisplay();
+  timerInterval = setInterval(function(){
+    timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft<=0){ clearInterval(timerInterval); finishTest(); }
+  }, 1000);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// START
+// ═══════════════════════════════════════════════════════════════════
+function startTest(){
+  var name = document.getElementById('student-name').value.trim();
+  if(!name){ document.getElementById('student-name').style.borderColor='var(--red)'; return; }
+  state.studentName = name;
+  state.startTime = Date.now();
+  state.testActive = true;
+  saveLock(false);
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('quiz-screen').classList.add('active');
+  document.getElementById('hdr-name').textContent = name;
+  document.getElementById('hdr-total').textContent = QUESTIONS.length;
+  updateTabCounter();
+  renderQuestion(0);
+  startTimer();
+}
+
+function renderQuestion(idx){
+  var q = QUESTIONS[idx], total = QUESTIONS.length;
+  state.current = idx;
+  document.getElementById('hdr-q').textContent = idx+1;
+  document.getElementById('prog-label').textContent = 'Питання '+(idx+1)+' з '+total;
+  var pct = Math.round(idx/total*100);
+  document.getElementById('prog-pct').textContent = pct+'%';
+  document.getElementById('prog-fill').style.width = pct+'%';
+  var keys = ['A','B','C','D'];
+  var html = '<div class="question-card"><div class="q-num">// ПИТАННЯ '+(idx+1)+' / '+total+'</div><div class="q-text">'+q.q+'</div><ul class="options-list">';
+  for(var i=0;i<q.opts.length;i++){
+    var sel = state.answers[idx]===i ? ' selected' : '';
+    html += '<li><label class="option-label'+sel+'" onclick="selectOpt('+i+')"><span class="opt-key">['+keys[i]+']</span><span>'+q.opts[i]+'</span></label></li>';
+  }
+  html += '</ul></div>';
+  document.getElementById('question-area').innerHTML = html;
+  document.getElementById('btn-prev').style.visibility = idx===0 ? 'hidden' : 'visible';
+  var btn = document.getElementById('btn-next');
+  btn.textContent = idx===total-1 ? 'ЗАВЕРШИТИ ✓' : 'ДАЛІ ▶';
+  btn.className = 'btn-nav primary';
+}
+function selectOpt(i){
+  state.answers[state.current] = i;
+  var lb = document.querySelectorAll('.option-label');
+  for(var j=0;j<lb.length;j++) lb[j].classList.toggle('selected', j===i);
+}
+function prevQ(){ if(state.current>0) renderQuestion(state.current-1); }
+function nextQ(){
+  if(state.current<QUESTIONS.length-1) renderQuestion(state.current+1);
+  else finishTest();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FINISH
+// ═══════════════════════════════════════════════════════════════════
+function finishTest(){
+  if(state.cheatBlocked) return;
+  clearInterval(timerInterval);
+  state.finished = true;
+  state.testActive = false;
+  state.endTime = Date.now();
+  saveLock(true);
+
+  var correct=0, wrong=0, skip=0;
+  for(var i=0;i<QUESTIONS.length;i++){
+    if(state.answers[i]===null) skip++;
+    else if(state.answers[i]===_getAns(i)) correct++;
+    else wrong++;
+  }
+
+  var pct = Math.round(correct/QUESTIONS.length*100);
+  var elapsed = Math.round((state.endTime-state.startTime)/1000);
+  var em = Math.floor(elapsed/60), es = elapsed%60;
+  var timeStr = String(em).padStart(2,'0')+':'+String(es).padStart(2,'0');
+
+  var grade, gc;
+  if(pct>=90){ grade='12 (відмінно)'; gc='var(--correct)'; }
+  else if(pct>=75){ grade='9\u201311 (добре)'; gc='#ffcc66'; }
+  else if(pct>=50){ grade='6\u20138 (задовільно)'; gc='var(--yellow)'; }
+  else{ grade='1\u20135 (незадовільно)'; gc='var(--wrong)'; }
+
+  document.getElementById('quiz-screen').classList.remove('active');
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('result-screen').classList.add('active');
+  document.getElementById('student-name-display').textContent = '// ' + state.studentName;
+  var sn = document.getElementById('score-num');
+  sn.textContent = correct; sn.style.color = gc;
+  document.getElementById('score-total').textContent = '/ '+QUESTIONS.length+' ('+pct+'%)';
+  var gb = document.getElementById('grade-badge');
+  gb.textContent = grade; gb.style.border='1px solid '+gc; gb.style.color=gc; gb.style.background='rgba(0,0,0,.3)';
+  document.getElementById('st-correct').textContent = correct;
+  document.getElementById('st-wrong').textContent = wrong;
+  document.getElementById('st-skip').textContent = skip;
+  document.getElementById('st-switches').textContent = state.tabSwitches;
+  document.getElementById('final-name-code').textContent = state.studentName;
+  document.getElementById('timer').textContent = '00:00';
+  document.getElementById('prog-fill').style.width = '100%';
+  document.getElementById('prog-pct').textContent = '100%';
+
+  sendTelegram(state.studentName, correct, QUESTIONS.length, pct, grade, wrong, skip, timeStr, state.tabSwitches, false);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TELEGRAM
+// ═══════════════════════════════════════════════════════════════════
+async function sendTelegram(name, correct, total, pct, grade, wrong, skip, time, switches, blocked){
+  var now = new Date().toLocaleString('uk-UA');
+  var header = blocked ? '\u{1F6AB} *ТЕСТ ЗАБЛОКОВАНО ЗА ПОРУШЕННЯ*' : '\uD83D\uDCCB *РЕЗУЛЬТАТ ТЕСТУ*';
+  var sepLine = '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501';
+  var switchLine;
+  if(switches === 0) switchLine = '\u2705 Переходів на інші вкладки: *0* (чесно)';
+  else if(switches === 1) switchLine = '\u26A0 Переходів: *1* з 3';
+  else if(switches === 2) switchLine = '\u26A0 Переходів: *2* з 3 \u2014 близько до блокування';
+  else switchLine = '\u{1F6AB} Переходів: *' + switches + '* \u2014 ТЕСТ ЗАБЛОКОВАНО!';
+
+  var msg = header + '\n' + sepLine + '\n'
+    + '\uD83D\uDC64 *Учень:* ' + name + '\n'
+    + '\uD83D\uDCC5 *Час:* ' + now + '\n'
+    + '\u23F1 *Витрачено:* ' + time + '\n'
+    + sepLine + '\n'
+    + '\u2705 Правильно: *' + correct + ' / ' + total + '* (' + pct + '%)\n'
+    + '\u274C Неправильно: ' + wrong + '\n'
+    + '\u2B55 Пропущено: ' + skip + '\n'
+    + '\uD83C\uDFC6 *Оцінка: ' + grade + '*\n'
+    + sepLine + '\n'
+    + switchLine + '\n'
+    + sepLine + '\n'
+    + '\uD83E\uDDCA Тема: 3D моделювання | 9 клас';
+
+  var statusEl = document.getElementById('send-status');
+  statusEl.style.color = 'var(--text-dim)';
+  statusEl.textContent = '\u29F3 Надсилання результату...';
+  try{
+    var resp = await fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:CHAT_ID, text:msg, parse_mode:'Markdown'})
+    });
+    if(resp.ok){
+      statusEl.style.color='var(--correct)';
+      statusEl.textContent='\u2713 Результат надіслано вчителю';
+    } else throw new Error();
+  }catch(e){
+    statusEl.style.color='var(--wrong)';
+    statusEl.textContent='\u26A0 Не вдалося надіслати \u2014 відкрий через GitHub Pages';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT + TAB DETECTION LISTENERS
+// ═══════════════════════════════════════════════════════════════════
+window.onload = function(){
+  checkLock();
+  var btn = document.getElementById('btn-start-main');
+  if(btn) btn.addEventListener('click', startTest);
+
+  // tab switch via Page Visibility API
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden) onTabSwitch();
+  });
+
+  // window blur (switching to other app or browser window)
+  window.addEventListener('blur', function(){
+    onTabSwitch();
+  });
+};
+</script>
+</body>
+</html>
