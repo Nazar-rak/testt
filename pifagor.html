@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тестове завдання · pifagor-school.com.ua</title>
+<meta name="description" content="5 місць, де текст працює проти конверсії.">
+
+<!-- Open Graph (Telegram, Facebook, etc.) -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="Тестове завдання· pifagor-school.com.ua">
+<meta property="og:description" content="5 місць, де текст працює проти конверсії.">
+<meta property="og:image" content="og_image.png">
+<meta property="og:locale" content="uk_UA">
+<meta property="og:site_name" content="Тестове завдання Ракитянський Н.І.">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Тестове завданян · pifagor-school.com.ua">
+<meta name="twitter:description" content="5 місць, де текст працює проти конверсії.">
+<meta name="twitter:image" content="og_image.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f1e8;
+  --bg-alt: #ede6d6;
+  --ink: #1a1814;
+  --ink-soft: #4a4439;
+  --ink-mute: #7a7266;
+  --accent: #7a2e2e;
+  --accent-soft: #a84141;
+  --line: #d8cfb8;
+  --line-soft: #e5ddc9;
+  --paper: #faf7f0;
+
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.6;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  background-image:
+    radial-gradient(circle at 0% 0%, rgba(122, 46, 46, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(122, 46, 46, 0.02) 0%, transparent 50%);
+}
+
+/* Subtle paper grain */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.35 0 0 0 0 0.3 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 40px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ===== TOP BAR ===== */
+.topbar {
+  padding: 28px 0 24px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+.topbar-left { display: flex; gap: 32px; }
+.topbar-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin-right: 10px;
+  vertical-align: 2px;
+}
+
+/* ===== HERO ===== */
+.hero {
+  padding: 100px 0 80px;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards;
+}
+
+.hero h1 {
+  font-family: var(--serif);
+  font-weight: 360;
+  font-size: clamp(44px, 7vw, 84px);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 36px;
+  font-variation-settings: "opsz" 144, "SOFT" 30;
+  opacity: 0;
+  animation: fadeUp 0.9s 0.1s ease forwards;
+}
+
+.hero h1 em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--accent);
+  font-variation-settings: "opsz" 144, "SOFT" 100;
+}
+
+.hero-deck {
+  font-family: var(--serif);
+  font-size: clamp(19px, 2vw, 23px);
+  line-height: 1.5;
+  color: var(--ink-soft);
+  font-weight: 380;
+  max-width: 680px;
+  font-variation-settings: "opsz" 18;
+  opacity: 0;
+  animation: fadeUp 1s 0.25s ease forwards;
+}
+
+.hero-meta {
+  margin-top: 56px;
+  display: flex;
+  gap: 48px;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 1s 0.4s ease forwards;
+}
+
+.hero-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hero-meta-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+.hero-meta-value {
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* ===== METHODOLOGY ===== */
+.intro {
+  padding: 80px 0 60px;
+  border-bottom: 1px solid var(--line);
+}
+
+.intro-grid {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 60px;
+}
+
+.intro-label {
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  padding-top: 10px;
+}
+
+.intro-body {
+  font-family: var(--serif);
+  font-weight: 380;
+  font-size: 22px;
+  line-height: 1.55;
+  color: var(--ink);
+  font-variation-settings: "opsz" 22, "SOFT" 40;
+  max-width: 680px;
+}
+
+.intro-body strong {
+  font-weight: 500;
+  color: var(--accent);
+}
+
+/* ===== TOC ===== */
+.toc {
+  padding: 56px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.toc-title {
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 28px;
+}
+
+.toc-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toc-item {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 20px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line-soft);
+  text-decoration: none;
+  color: var(--ink);
+  transition: all 0.3s ease;
+  align-items: baseline;
+}
+
+.toc-item:hover {
+  padding-left: 14px;
+  background: linear-gradient(90deg, rgba(122,46,46,0.05) 0%, transparent 100%);
+}
+
+.toc-item:last-child { border-bottom: 1px solid var(--line-soft); }
+
+.toc-num {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 340;
+  color: var(--accent);
+  font-variation-settings: "opsz" 36, "SOFT" 20;
+  font-style: italic;
+}
+
+.toc-text {
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.3;
+  font-weight: 400;
+  font-variation-settings: "opsz" 18;
+}
+
+.toc-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  white-space: nowrap;
+}
+
+/* ===== PROBLEM BLOCKS ===== */
+.problem {
+  padding: 110px 0 60px;
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: 40px;
+  position: relative;
+}
+
+.problem-header {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 60px;
+  margin-bottom: 56px;
+  align-items: start;
+}
+
+.problem-number {
+  font-family: var(--serif);
+  font-size: 140px;
+  line-height: 0.85;
+  font-weight: 280;
+  color: var(--accent);
+  font-variation-settings: "opsz" 144, "SOFT" 80;
+  font-style: italic;
+  letter-spacing: -0.04em;
+  padding-top: 8px;
+}
+
+.problem-title-block {
+  padding-top: 18px;
+}
+
+.problem-kicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.problem-kicker::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.problem-title {
+  font-family: var(--serif);
+  font-weight: 380;
+  font-size: clamp(28px, 3.2vw, 42px);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  font-variation-settings: "opsz" 60, "SOFT" 30;
+}
+
+.problem-body {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 60px;
+}
+
+.problem-row {
+  display: contents;
+}
+
+.problem-row + .problem-row > * {
+  padding-top: 36px;
+  border-top: 1px solid var(--line-soft);
+  margin-top: 36px;
+}
+
+.problem-label {
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  padding-top: 8px;
+  line-height: 1.4;
+}
+
+.problem-content {
+  font-size: 19px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  max-width: 680px;
+}
+
+.problem-content p + p { margin-top: 18px; }
+
+.problem-content strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.problem-content em {
+  font-style: italic;
+  color: var(--ink);
+}
+
+/* Citation block */
+.citation {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.45;
+  font-style: italic;
+  font-weight: 380;
+  color: var(--ink);
+  font-variation-settings: "opsz" 24, "SOFT" 70;
+  padding: 20px 0 20px 28px;
+  border-left: 2px solid var(--accent);
+  position: relative;
+  max-width: 680px;
+}
+
+.citation::before {
+  content: '❝';
+  position: absolute;
+  left: 28px;
+  top: -14px;
+  font-size: 48px;
+  color: var(--accent);
+  font-family: var(--serif);
+  line-height: 1;
+  background: var(--bg);
+  padding: 0 8px;
+  font-style: normal;
+}
+
+.citation-inner {
+  padding-top: 12px;
+}
+
+/* Nested sub-sections (for problem 3 "Why bad" with 3 levels) */
+.sub-item {
+  padding: 22px 0;
+  border-top: 1px dashed var(--line);
+}
+.sub-item:first-child { border-top: none; padding-top: 0; }
+.sub-item:last-child { padding-bottom: 0; }
+
+.sub-title {
+  font-family: var(--serif);
+  font-size: 21px;
+  font-weight: 500;
+  color: var(--accent);
+  font-style: italic;
+  margin-bottom: 12px;
+  font-variation-settings: "opsz" 20;
+}
+
+.sub-body { color: var(--ink-soft); }
+
+/* Highlight treatment for правопис/провопис */
+.strike-wrong {
+  text-decoration: line-through;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  color: var(--ink-mute);
+  font-family: var(--mono);
+  font-size: 0.9em;
+  background: rgba(122, 46, 46, 0.06);
+  padding: 1px 4px;
+}
+
+.highlight-correct {
+  font-family: var(--mono);
+  font-size: 0.9em;
+  color: var(--accent);
+  background: rgba(122, 46, 46, 0.08);
+  padding: 1px 4px;
+  font-weight: 500;
+}
+
+/* Inline list 1) 2) 3) */
+.numbered-inline {
+  display: inline;
+}
+
+/* ===== CONCLUSION ===== */
+.conclusion {
+  padding: 120px 0 100px;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+
+.conclusion-number {
+  font-family: var(--serif);
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 500;
+  margin-bottom: 40px;
+  font-family: var(--mono);
+}
+
+.conclusion-body {
+  font-family: var(--serif);
+  font-size: clamp(26px, 3vw, 36px);
+  line-height: 1.35;
+  font-weight: 340;
+  color: var(--ink);
+  font-variation-settings: "opsz" 36, "SOFT" 40;
+  max-width: 820px;
+  letter-spacing: -0.01em;
+}
+
+.conclusion-body em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  padding: 48px 0 60px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+.footer-sig {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: normal;
+  font-variation-settings: "opsz" 18, "SOFT" 50;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .container { padding: 0 22px; }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .topbar-left { gap: 18px; flex-wrap: wrap; }
+
+  .hero { padding: 60px 0 50px; }
+  .hero-meta { gap: 28px; margin-top: 36px; }
+
+  .intro, .problem-header, .problem-body, .intro-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .intro { padding: 50px 0 40px; }
+  .intro-body { font-size: 19px; }
+
+  .problem { padding: 70px 0 40px; }
+  .problem-number { font-size: 92px; padding-top: 0; }
+  .problem-title-block { padding-top: 8px; }
+
+  .problem-row + .problem-row > * {
+    padding-top: 24px;
+    margin-top: 24px;
+  }
+
+  .citation { font-size: 19px; padding-left: 20px; }
+  .citation::before { left: 20px; font-size: 38px; }
+
+  .toc-item { grid-template-columns: 40px 1fr; }
+  .toc-tag { grid-column: 2; margin-top: 4px; }
+  .toc-text { font-size: 17px; }
+
+  .conclusion { padding: 70px 0 60px; }
+  .conclusion-body { font-size: 22px; }
+
+  .footer { flex-direction: column; align-items: flex-start; }
+}
+
+/* ===== PRINT ===== */
+@media print {
+  body { background: white; }
+  body::before { display: none; }
+  .problem { page-break-inside: avoid; }
+  .hero { padding: 40px 0; }
+}
+</style>
+</head>
+<body>
+
+
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+     <h1>5 місць, де текст працює <em>проти</em> конверсії</h1>
+    <p class="hero-deck">
+     Аналіз проведено на основі публічної версії головної сторінки — від меню до футера.
+    </p>
+        </div>
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section class="intro">
+  <div class="container">
+    <div class="intro-grid">
+	 <div class="intro-label"></div>
+           <div class="intro-body">
+        Для аналізу взята головна сторінка сайту (включно з меню, hero-секцією, блоками переваг, формами, FAQ, відгуками, SEO-текстом і футером). Нижче — <strong>5 точкових спостережень</strong>: проблема сформульована там, де вона найсильніше б'є по користувачеві й рішенні про запис на пробне заняття.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOC -->
+<section class="toc">
+  <div class="container">
+    <div class="toc-title">Зміст</div>
+    <div class="toc-list">
+      <a href="#p1" class="toc-item">
+        <span class="toc-num">01</span>
+        <span class="toc-text">Hero-підзаголовок не дає жодної конкретної обіцянки</span>
+        <span class="toc-tag">Hero</span>
+      </a>
+      <a href="#p2" class="toc-item">
+        <span class="toc-num">02</span>
+        <span class="toc-text">Пункти меню «Ціни» і «Про школу» ведуть у нікуди</span>
+        <span class="toc-tag">Навігація</span>
+      </a>
+      <a href="#p3" class="toc-item">
+        <span class="toc-num">03</span>
+        <span class="toc-text">Секція «Чому дітям подобається» відповідає на чуже питання</span>
+        <span class="toc-tag">Позиціонування</span>
+      </a>
+      <a href="#p4" class="toc-item">
+        <span class="toc-num">04</span>
+        <span class="toc-text">Слоган у футері звужує школу до одного предмета</span>
+        <span class="toc-tag">Бренд</span>
+      </a>
+      <a href="#p5" class="toc-item">
+        <span class="toc-num">05</span>
+        <span class="toc-text">Помилки в українській мові — у школі, що навчає української</span>
+        <span class="toc-tag">Грамотність</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM 1 -->
+<section class="problem reveal" id="p1">
+  <div class="container">
+    <div class="problem-header">
+      <div class="problem-number">01</div>
+      <div class="problem-title-block">
+        <div class="problem-kicker">Проблема · Hero</div>
+        <h2 class="problem-title">Hero-підзаголовок не дає жодної конкретної обіцянки</h2>
+      </div>
+    </div>
+
+    <div class="problem-body">
+      <div class="problem-row">
+        <div class="problem-label">Де</div>
+        <div class="problem-content">
+          <p>Головна сторінка, головний екран (hero-секція) — підзаголовок одразу під назвою «Онлайн-школа Піфагор».</p>
+        </div>
+      </div>
+
+      <div class="problem-row">
+        <div class="problem-label">Цитата з сайту</div>
+        <div class="problem-content">
+          <div class="citation">
+            <div class="citation-inner">
+              Дитина зможе підтягнути оцінки, підготуватися до контрольних чи іспитів, а ви отримаєте спокій за її майбутнє та результат
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="problem-row">
+        <div class="problem-label">Що не так</div>
+        <div class="problem-content">
+          <p>Одне речення одразу спрямоване на <strong>дві аудиторії</strong> (дитину і батьків) і при цьому перелічує <strong>три різні сценарії</strong> — оцінки, контрольні, іспити. Дієслово «зможе» звучить як допущення, а не обіцянка. Кінцівка обривається на слові «результат» без пояснення, який саме (вищі оцінки? бал НМТ? впевненість на контрольній?).</p>
+        </div>
+      </div>
+
+      <div class="problem-row">
+        <div class="problem-label">Чому це погано</div>
+        <div class="problem-content">
+          <p>Hero-підзаголовок — важливе місце на сторінці: саме тут користувач за декілька секунд вирішує, «моє це чи не моє». Тут школа розмиває фокус замість його загострити. Батьки, які шукають підготовку до НМТ для своїх дітей, не бачать у підзаголовку чіткого сигналу, що це саме для них. Мама 5-класника, у якого проблеми з навчанням, також не впізнає свою ситуацію. У результаті обидві аудиторії змушені самостійно «додумувати» цінність — і значна частина просто закриє сторінку.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM 2 -->
+<section class="problem reveal" id="p2">
+  <div class="container">
+    <div class="problem-header">
+      <div class="problem-number">02</div>
+      <div class="problem-title-block">
+        <div class="problem-kicker">Проблема · Навігація</div>
+        <h2 class="problem-title">Пункти меню «Ціни» і «Про школу» ведуть у нікуди</h2>
+      </div>
+    </div>
+
+    <div class="problem-body">
+      <div class="problem-row">
+        <div class="problem-label">Де</div>
+        <div class="problem-content">
+          <p>Головне меню сайту, пункти «Про школу» і «Ціни». Клік не відкриває окрему сторінку — просто повертає користувача на верх поточної.</p>
+        </div>
+      </div>
+
+      <div class="problem-row">
+        <div class="problem-label">Що не так</div>
+        <div class="problem-content">
+          <p>Це не текстова помилка в прямому сенсі, але саме текст пункту меню формує обіцянку: «тут я побачу ціни». Обіцянку не виконано. Для користувача це виглядає або як недороблений сайт, або як свідоме приховування вартості.</p>
+        </div>
+      </div>
+
+      <div class="problem-row">
+        <div class="problem-label">Чому це погано</div>
+        <div class="problem-content">
+          <p>«Ціни» — один із ключових запитів батьків на етапі вибору школи. Коли цей пункт не працює, є два негативні сценарії.</p>
+          <p><strong>Перший.</strong> Користувач робить висновок, що його спершу намагатимуться втягнути в комунікацію, а вартість озвучать уже в процесі — і обирає конкурентів із відкритим прайсом.</p>
+          <p><strong>Другий.</strong> Навіть лояльний відвідувач втрачає довіру до продукту — якщо сайт виглядає недопрацьованим, виникає сумнів у якості навчання.</p>
+          <p>У підсумку це б'є по конверсії в найчутливішій точці воронки.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM 3 -->
+<section class="problem reveal" id="p3">
+  <div class="container">
+    <div class="problem-header">
+      <div class="problem-number">03</div>
+      <div class="problem-title-block">
+        <div class="problem-kicker">Проблема · Позиціонування</div>
+        <h2 class="problem-title">Секція «Чому дітям подобається навчатися в Піфагорі» відповідає на чуже питання</h2>
+      </div>
+    </div>
+
+    <div class="problem-body">
+      <div class="problem-row">
+        <div class="problem-label">Де</div>
+        <div class="problem-content">
+          <p>Головна сторінка, третя за рахунком секція (після hero і блоку «Всього один крок»). Заголовок «Чому дітям подобається навчатися в "Піфагор"» — далі п'ять буллетів про школу.</p>
+        </div>
+      </div>
+
+      <div class="problem-row">
+        <div class="problem-label">Що не так</div>
+        <div class="problem-content">
+          <p>Заголовок формулює питання з позиції дитини — чому <em>їй</em> тут подобається навчатися. Водночас підзаголовок одразу зміщує фокус на батьків і говорить мовою результатів: «оцінки зростають», «готовність до НМТ», «з'являється впевненість». Далі п'ять булетів повністю підсилюють цей зсув — це раціональні, операційні аргументи для дорослого: «куратор контролює відвідуваність», «12 рівнів знань», «методист для дитини», «регулярний фідбек», «живі уроки».</p>
+          <p>У результаті виникає розрив: заявлена точка входу — дитина, а фактична комунікація — батьки. Бракує емоційного шару з дитячої перспективи: що саме відчуває учень на уроці, які «маленькі перемоги» переживає, чому не хоче пропускати заняття, що розповідає вдома після них. Це послаблює переконливість блоку й не закриває обіцянку заголовка.</p>
+        </div>
+      </div>
+
+      <div class="problem-row">
+        <div class="problem-label">Чому це погано</div>
+        <div class="problem-content">
+          <div class="sub-item">
+            <div class="sub-title">Функціональний рівень</div>
+            <div class="sub-body">
+              Заголовок формує обіцянку, яку контент не підкріплює. Виникає когнітивний дисонанс: користувач не завжди розуміє його, але підсвідомо знижує довіру до тексту.
+            </div>
+          </div>
+
+          <div class="sub-item">
+            <div class="sub-title">Конверсійний рівень</div>
+            <div class="sub-body">
+              У цьому блоці втрачається найсильніший тригер для освітнього продукту — емоційний «пруф» від імені дитини. Ключовий бар'єр батьків — можливий опір дитини додатковим заняттям. Його знімають конкретні поведінкові сигнали: <em>«сама просить наступний урок»</em>, <em>«з'явився улюблений викладач»</em>, <em>«вперше за рік самостійно принесла розв'язану задачу»</em>. Операційні булети про процес цього не закривають.
+            </div>
+          </div>
+
+          <div class="sub-item">
+            <div class="sub-title">Брендовий рівень</div>
+            <div class="sub-body">
+              Секція, яка має працювати на диференціацію, заповнена універсальними формулюваннями: «живі уроки», «куратор», «методист», «рівні знань». Це паритетні атрибути категорії, які легко копіюються конкурентами. У підсумку школа втрачає унікальний голос саме в точці, де він критично потрібен. <strong>Це не локальна текстова вада, а втрата позиціонування на одному з найцінніших екранів сайту.</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM 4 -->
+<section class="problem reveal" id="p4">
+  <div class="container">
+    <div class="problem-header">
+      <div class="problem-number">04</div>
+      <div class="problem-title-block">
+        <div class="problem-kicker">Проблема · Бренд</div>
+        <h2 class="problem-title">Слоган у футері звужує школу до одного предмета</h2>
+      </div>
+    </div>
+
+    <div class="problem-body">
+      <div class="problem-row">
+        <div class="problem-label">Де</div>
+        <div class="problem-content">
+          <p>Футер сайту, блок із назвою «Ваша школа Pifagor».</p>
+        </div>
+      </div>
+
+      <div class="problem-row">
+        <div class="problem-label">Цитата з сайту</div>
+        <div class="problem-content">
+          <div class="citation">
+            <div class="citation-inner">
+              Тут дитина полюбить математику назавжди! Ми виховуємо любов до знань.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="problem-row">
+        <div class="problem-label">Що не так</div>
+        <div class="problem-content">
+          <p>Фактично школа пропонує ширший спектр напрямів — математику, фізику, українську мову та підготовку до НМТ, що підтверджується меню, каталогом, профілями викладачів і FAQ. Водночас слоган у футері звужує позиціонування до <strong>однієї дисципліни</strong> — математики, створюючи розрив між обіцянкою та реальним продуктом.</p>
+          <p>Додатково формулювання «полюбить назавжди» — це емоційна гіпербола, яку продукт об'єктивно не може гарантувати, що підриває довіру до комунікації.</p>
+        </div>
+      </div>
+
+      <div class="problem-row">
+        <div class="problem-label">Чому це погано</div>
+        <div class="problem-content">
+          <p>Футер бачить кожен користувач — це повторюване повідомлення, яке закріплює позиціонування. Батьки, які прийшли з рекламою підготовки до НМТ з історії України або репетиторства з фізики, читають у футері «тут полюблять математику» і отримують когнітивний дисонанс: <em>«то вони математична школа чи ні?»</em>.</p>
+          <p>Це розмиває позиціонування, знижує довіру до непрофільних для слогана курсів і фактично ріже конверсію саме тих напрямів, які школа активно розвиває (фізика, укр. мова, НМТ).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM 5 -->
+<section class="problem reveal" id="p5">
+  <div class="container">
+    <div class="problem-header">
+      <div class="problem-number">05</div>
+      <div class="problem-title-block">
+        <div class="problem-kicker">Проблема · Грамотність</div>
+        <h2 class="problem-title">Блок «Що читають мами сьогодні» концентрує одразу кілька текстових помилок — у школі, що навчає української мови</h2>
+      </div>
+    </div>
+
+    <div class="problem-body">
+      <div class="problem-row">
+        <div class="problem-label">Де</div>
+        <div class="problem-content">
+          <p>Головна сторінка, секція «Що Читають мами сьогодні» — стрічка з 5 крайніх блогових статей у нижній частині сторінки.</p>
+        </div>
+      </div>
+
+      <div class="problem-row">
+        <div class="problem-label">Що не так</div>
+        <div class="problem-content">
+          <p>У блоці накладається кілька проблем різного рівня.</p>
+
+          <div class="sub-item">
+            <div class="sub-title">У самому заголовку блоку — два дефекти</div>
+            <div class="sub-body">
+              Слово «мами» вилучає батьків, бабусь, дідусів і опікунів, які так само ухвалюють рішення про навчання дитини. Слово «Читають» з великої літери посеред заголовка не відповідає українському правопису.
+            </div>
+          </div>
+
+          <div class="sub-item">
+            <div class="sub-title">У заголовку однієї зі статей — помилка у слові «правопис»</div>
+            <div class="sub-body">
+              Назва звучить як «Пастки нового Українського <span class="strike-wrong">провопису</span> <span class="highlight-correct">правопису</span>». Помилка зашита не лише у відображений текст. Стаття присвячена саме українському правопису. Додатково в тій же назві «Українського» стоїть з великої літери у середині фрази.
+            </div>
+          </div>
+
+          <div class="sub-item">
+            <div class="sub-title">У підписах авторів — граматична помилка</div>
+            <div class="sub-body">
+              Під трьома статтями одного автора підпис <span class="strike-wrong">27 публікації</span> <span class="highlight-correct">27 публікацій</span> (родовий відмінок множини після числа 5+).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="problem-row">
+        <div class="problem-label">Чому це погано</div>
+        <div class="problem-content">
+          <p>Окремо кожна з цих помилок — дрібниця. Разом вони створюють ефект, який безпосередньо знищує головний актив школи — <strong>довіру до мовної компетентності</strong>.</p>
+          <p>Батьки, які обирають репетитора з української мови, бачать на одному екрані: <strong>1)</strong> вилучення свого гендера з цільової аудиторії («мами»); <strong>2)</strong> опечатку у слові «правопис» у заголовку статті про правопис; <strong>3)</strong> неузгоджену форму числівника — помилку з програми 6 класу.</p>
+          <p>Кожен наступний пункт посилює попередній. Якщо школа допускає це на головній сторінці — батьки обґрунтовано припускають, що на уроках дитина отримає те саме. У мовній ніші це найшвидший спосіб втратити клієнта ще до першої заявки.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONCLUSION -->
+<section class="conclusion reveal">
+  <div class="container">
+    <div class="conclusion-number">Узагальнення</div>
+    <div class="conclusion-body">
+      Усі п'ять знайдених проблем — про <em>довіру</em> й <em>цілісність</em>: від розмитої обіцянки в&nbsp;hero-секції до опечаток в українській мові на головній сторінці школи, що навчає української мови. І кожна з них прямо впливає на рішення батьків залишити заявку на пробний урок.
+    </div>
+  </div>
+</section>
+
+
+
+<script>
+// Staggered reveal on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('is-visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+</script>
+
+</body>
+</html>
